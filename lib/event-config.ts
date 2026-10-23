@@ -67,7 +67,7 @@ export const EVENT = {
   ] satisfies Performer[],
 
   sponsors: [
-    { name: "Dawan Nilshan Photography", role: "Photography" },
+    { name: "Pawan Nilshan Photography", role: "Photography" },
     { name: "Dilshan Fireworks", role: "Fireworks" },
     { name: "Madu Car Rental", role: "Transport" },
   ] satisfies Sponsor[],
