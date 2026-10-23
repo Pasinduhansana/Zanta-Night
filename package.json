@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.2",
-    "@next/swc-win32-x64-msvc": "^16.4.2",
     "framer-motion": "^14.6.0",
     "gsap": "^3.15.0",
     "lucide-react": "^1.61.0",

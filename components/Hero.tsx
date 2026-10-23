@@ -18,13 +18,13 @@ const BEAMS = [
   { x: "40%", r1: "6deg", r2: "20deg", dur: "16s", delay: "4.5s", peak: "0.22", w: "150px", wide: true },
 ];
 
-function Chars({ text, base }: { text: string; base: number }) {
+function Chars({ text, base, className = "" }: { text: string; base: number; className?: string }) {
   return (
     <>
       {Array.from(text).map((ch, i) => (
         <span
           key={`${ch}-${i}`}
-          className="char-rise"
+          className={`char-rise ${className}`}
           style={{ ["--d" as string]: `${base + i * 0.055}s` }}
         >
           {ch}
@@ -148,8 +148,8 @@ export default function Hero() {
             </span>
             <span aria-hidden className="block">
               <span className="block overflow-hidden pb-[0.06em]">
-                <span className="block font-display text-[clamp(4rem,17vw,15.5rem)] leading-[0.82] tracking-[-0.015em] text-metallic">
-                  <Chars text="ZANTA" base={0.35} />
+                <span className="block font-display text-[clamp(4rem,17vw,15.5rem)] leading-[0.82] tracking-[-0.015em]">
+                  <Chars text="ZANTA" base={0.35} className="text-metallic" />
                 </span>
               </span>
               <span className="relative -mt-[0.04em] block overflow-hidden pb-[0.08em] sm:ml-[6vw]">
