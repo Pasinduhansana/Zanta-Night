@@ -49,7 +49,7 @@ export const EVENT = {
     city: null as string | null,
     address: null as string | null,
     confirmed: false,
-    statusLabel: "VENUE TO BE ANNOUNCED",
+    statusLabel: "VTA Ground Thalgaswela",
   },
 
   ticket: {
@@ -67,7 +67,7 @@ export const EVENT = {
   ] satisfies Performer[],
 
   sponsors: [
-    { name: "Pawan Nilshan Photography", role: "Photography" },
+    { name: "Pawan Niroshana Photography", role: "Photography" },
     { name: "Dilshan Fireworks", role: "Fireworks" },
     { name: "Madu Car Rental", role: "Transport" },
   ] satisfies Sponsor[],

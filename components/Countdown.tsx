@@ -45,7 +45,7 @@ function DatePlate() {
         </div>
         <div className="px-4 py-4">
           <MapPin className="mb-2 h-4 w-4 text-acid" />
-          <p className="font-display text-2xl leading-none text-bone">TBA</p>
+          <p className="font-display text-2xl leading-none text-bone">VTA Ground Thalgaswela</p>
           <p className="mt-1.5 text-[0.58rem] uppercase tracking-[0.2em] text-mist">Venue</p>
         </div>
       </div>
