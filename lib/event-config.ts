@@ -62,7 +62,7 @@ export const EVENT = {
 
   performers: [
     { name: "Mr. Percussion", slug: "mr-percussion", index: "01", image: "/images/artist-percussion.svg", line: "Rhythm on the decks" },
-    { name: "YAKEE", slug: "yakee", index: "02", image: "/images/artist-yakee.svg", line: "Hands in the air" },
+    { name: "YAKEE", slug: "yakee", index: "02", image: "/images/yakee.png", line: "Hands in the air" },
     { name: "DENON", slug: "denon", index: "03", image: "/images/artist-denon.svg", line: "Deep into the night" },
   ] satisfies Performer[],
 

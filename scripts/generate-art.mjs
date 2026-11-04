@@ -402,7 +402,7 @@ const files = {
   "exp-party.svg": expParty(),
   "exp-food.svg": expFood(),
   "artist-percussion.svg": artistPercussion(),
-  "artist-yakee.svg": artistYakee(),
+  "yakee.png": artistYakee(),
   "artist-denon.svg": artistDenon(),
 };
 
