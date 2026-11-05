@@ -35,6 +35,21 @@ export const bookingSchema = z.object({
 export type BookingInput = z.infer<typeof bookingSchema>;
 export type BookingFormValues = z.input<typeof bookingSchema>;
 
+export type BookingStatus =
+  | "pending"
+  | "awaiting_verification"
+  | "confirmed"
+  | "checked_in"
+  | "rejected"
+  | "expired";
+
+export type SlipInfo = {
+  fileName: string;
+  size: number;
+  contentType: string;
+  uploadedAt: string;
+};
+
 export type BookingPublic = {
   reference: string;
   fullName: string;
@@ -44,7 +59,11 @@ export type BookingPublic = {
   unitPrice: number;
   total: number;
   ticketCategory: string;
-  status: "confirmed" | "pending";
+  status: BookingStatus;
   storage: "mongo" | "memory";
   createdAt: string;
+  rejectReason?: string | null;
+  verifiedAt?: string | null;
+  checkedInAt?: string | null;
+  slip?: SlipInfo | null;
 };

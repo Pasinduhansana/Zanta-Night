@@ -1,5 +1,13 @@
 import { Schema, model, models, type Model } from "mongoose";
 
+export type BookingStatus =
+  | "pending"
+  | "awaiting_verification"
+  | "confirmed"
+  | "checked_in"
+  | "rejected"
+  | "expired";
+
 export type BookingAttrs = {
   reference: string;
   fullName: string;
@@ -9,8 +17,18 @@ export type BookingAttrs = {
   unitPrice: number;
   total: number;
   ticketCategory: string;
-  status: "confirmed" | "pending";
+  status: BookingStatus;
   notes?: string;
+  rejectReason?: string;
+  slip?: {
+    data: Buffer;
+    contentType: string;
+    fileName: string;
+    size: number;
+    uploadedAt: Date;
+  };
+  verifiedAt?: Date;
+  checkedInAt?: Date;
 };
 
 const BookingSchema = new Schema<BookingAttrs>(
@@ -23,11 +41,35 @@ const BookingSchema = new Schema<BookingAttrs>(
     unitPrice: { type: Number, required: true, min: 0 },
     total: { type: Number, required: true, min: 0 },
     ticketCategory: { type: String, required: true },
-    status: { type: String, enum: ["confirmed", "pending"], default: "confirmed" },
+    status: {
+      type: String,
+      enum: [
+        "pending",
+        "awaiting_verification",
+        "confirmed",
+        "checked_in",
+        "rejected",
+        "expired",
+      ],
+      default: "pending",
+      index: true,
+    },
     notes: { type: String, trim: true },
+    rejectReason: { type: String, trim: true },
+    slip: {
+      data: { type: Buffer, select: false },
+      contentType: { type: String },
+      fileName: { type: String },
+      size: { type: Number },
+      uploadedAt: { type: Date },
+    },
+    verifiedAt: { type: Date },
+    checkedInAt: { type: Date },
   },
   { timestamps: true },
 );
+
+BookingSchema.index({ status: 1, createdAt: 1 });
 
 export const Booking: Model<BookingAttrs> =
   (models.Booking as Model<BookingAttrs>) || model<BookingAttrs>("Booking", BookingSchema);

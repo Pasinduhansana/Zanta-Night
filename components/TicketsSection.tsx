@@ -9,7 +9,23 @@ import { CalendarDays, Clock, MapPin, Minus, Plus, Ticket, Users } from "lucide-
 export default function TicketsSection() {
   const rootRef = useRef<HTMLElement | null>(null);
   const [qty, setQty] = useState(1);
+  const [stock, setStock] = useState<{ remaining: number; capacity: number } | null>(null);
   const total = EVENT.ticket.price * qty;
+
+  useEffect(() => {
+    let cancelled = false;
+    void fetch("/api/event", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((data: { ok: boolean; remaining?: number; capacity?: number }) => {
+        if (!cancelled && data.ok) {
+          setStock({ remaining: data.remaining ?? 0, capacity: data.capacity ?? 0 });
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -158,8 +174,16 @@ export default function TicketsSection() {
               Continue — LKR {total.toLocaleString("en-US")}
             </Link>
             <p className="mt-3 text-center text-[0.6rem] uppercase tracking-[0.2em] text-mist/60">
-              No payment is collected on this website
+              Pay by transfer after booking — upload your slip on your ticket page
             </p>
+            {stock && (
+              <p className="mt-3 text-center text-[0.6rem] uppercase tracking-[0.2em] text-mist">
+                <span className={stock.remaining <= 20 ? "text-[#ffc53d]" : "text-acid"}>
+                  {stock.remaining}
+                </span>{" "}
+                of {stock.capacity} tickets left
+              </p>
+            )}
           </div>
         </div>
       </div>

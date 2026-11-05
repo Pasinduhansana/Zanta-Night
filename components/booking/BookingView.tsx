@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
@@ -49,6 +49,24 @@ export default function BookingView() {
 
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [stock, setStock] = useState<{ remaining: number; capacity: number } | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    void fetch("/api/event", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((data: { ok: boolean; remaining?: number; capacity?: number }) => {
+        if (!cancelled && data.ok) {
+          setStock({ remaining: data.remaining ?? 0, capacity: data.capacity ?? 0 });
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const soldOut = stock !== null && stock.remaining <= 0;
 
   const {
     register,
@@ -124,6 +142,12 @@ export default function BookingView() {
               {serverError}
             </p>
           )}
+          {soldOut && (
+            <p className="flex items-center gap-2.5 border border-[#ff7a6b]/40 bg-[#ff7a6b]/10 px-4 py-3 text-sm text-[#ffb3aa]">
+              <AlertTriangle className="h-4 w-4 shrink-0" />
+              This event is fully booked right now — no tickets remain.
+            </p>
+          )}
 
           <Field label="Full name" error={errors.fullName?.message}>
             <input
@@ -183,7 +207,7 @@ export default function BookingView() {
 
           <button
             type="submit"
-            disabled={submitting}
+            disabled={submitting || soldOut}
             className="btn-acid w-full px-7 py-4 text-[0.75rem] disabled:opacity-70"
           >
             {submitting ? (
@@ -200,8 +224,8 @@ export default function BookingView() {
           </button>
 
           <p className="text-[0.62rem] uppercase tracking-[0.2em] text-mist/60">
-            No payment is collected on this website — you receive a booking reference
-            instantly.
+            Pay by bank or mobile transfer after booking — upload your slip on the
+            confirmation page
           </p>
         </form>
 
@@ -244,6 +268,14 @@ export default function BookingView() {
                 LKR {total.toLocaleString("en-US")}
               </span>
             </div>
+            {stock && (
+              <div className="flex items-center justify-between border-t border-white/10 px-5 py-3 text-[0.62rem] uppercase tracking-[0.18em] text-mist">
+                <span>Tickets left</span>
+                <span className={stock.remaining <= 20 ? "text-[#ffc53d]" : "text-bone"}>
+                  {stock.remaining} of {stock.capacity}
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="mt-4 border border-white/10 bg-abyss/50 p-5">

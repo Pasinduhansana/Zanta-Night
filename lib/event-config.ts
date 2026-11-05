@@ -58,6 +58,24 @@ export const EVENT = {
     currency: "LKR",
     priceLabel: "LKR 500",
     maxPerOrder: 10,
+    /** Total stock available — adjust to the real allocation. */
+    capacity: 500,
+  },
+
+  /**
+   * Payment instructions shown after booking (pay by transfer, upload slip).
+   * Fill in the real credentials — leave empty until they are confirmed.
+   */
+  payment: {
+    /** Hours the guest has to upload a slip before the booking expires. */
+    windowHours: 48,
+    bank: {
+      name: "",
+      accountName: "",
+      accountNumber: "",
+    },
+    wallets: [] as { label: string; number: string }[],
+    extraNote: "",
   },
 
   performers: [

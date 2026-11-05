@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { bookingSchema } from "@/lib/validation";
-import { createBooking } from "@/lib/booking-service";
+import { BookingError, createBooking } from "@/lib/booking-service";
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -26,6 +26,9 @@ export async function POST(request: Request) {
     const booking = await createBooking(parsed.data);
     return NextResponse.json({ ok: true, booking }, { status: 201 });
   } catch (err) {
+    if (err instanceof BookingError) {
+      return NextResponse.json({ ok: false, error: err.message }, { status: err.status });
+    }
     console.error("[zanta] booking creation failed:", err);
     return NextResponse.json(
       { ok: false, error: "Could not create your booking. Please try again." },
