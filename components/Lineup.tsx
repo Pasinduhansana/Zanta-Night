@@ -5,9 +5,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { gsap } from "@/lib/gsap";
 import { EVENT } from "@/lib/event-config";
+import { useT } from "@/components/providers/LanguageProvider";
 import { ArrowUpRight } from "lucide-react";
 
 export default function Lineup() {
+  const t = useT();
   const rootRef = useRef<HTMLElement | null>(null);
   const gridRef = useRef<HTMLDivElement | null>(null);
   const headRef = useRef<HTMLDivElement | null>(null);
@@ -58,18 +60,17 @@ export default function Lineup() {
       <div className="relative mx-auto w-full max-w-[1400px] px-5 sm:px-8">
         <div ref={headRef}>
           <div className="flex items-center justify-between gap-6 border-b border-white/10 pb-5">
-            <span className="kicker text-acid">02 — Lineup</span>
-            <span className="kicker text-mist">Three performers</span>
+            <span className="kicker text-acid">{t.lineup.section}</span>
+            <span className="kicker text-mist">{t.lineup.count}</span>
           </div>
 
           <div className="mt-10 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <h2 className="text-[clamp(2.6rem,7.5vw,6.5rem)] leading-[0.9] tracking-tight">
-              THREE NAMES.
-              <span className="block text-metallic-sheen">ONE NIGHT.</span>
+              {t.lineup.headingTop}
+              <span className="block text-metallic-sheen">{t.lineup.headingBottom}</span>
             </h2>
             <p className="max-w-sm text-mist lg:pb-3">
-              The booth belongs to {EVENT.performers.map((p) => p.name).join(", ")} — one
-              after another, from the first warm-up hour to the final drop.
+              {t.lineup.intro(EVENT.performers.map((p) => p.name).join(", "))}
             </p>
           </div>
         </div>
@@ -109,13 +110,13 @@ export default function Lineup() {
               </span>
 
               <div className="absolute inset-x-5 bottom-5">
-                <span className="kicker text-acid">Performer</span>
+                <span className="kicker text-acid">{t.lineup.performer}</span>
                 <h3 className="mt-2 text-[clamp(2rem,4vw,2.9rem)] leading-[0.95] text-bone transition-transform duration-500 group-hover:-translate-y-1">
                   {artist.name}
                 </h3>
                 <div className="mt-3 flex items-center justify-between gap-3 border-t border-white/15 pt-3">
                   <p className="text-[0.78rem] uppercase tracking-[0.18em] text-mist">
-                    {artist.line}
+                    {t.lineup.lines[artist.slug]}
                   </p>
                   <ArrowUpRight className="h-4 w-4 shrink-0 text-acid transition-transform duration-500 group-hover:rotate-45" />
                 </div>
@@ -125,7 +126,7 @@ export default function Lineup() {
                 aria-hidden
                 className="absolute right-4 top-4 rounded-full border border-acid/40 bg-abyss/70 px-2.5 py-1 text-[0.55rem] font-semibold uppercase tracking-[0.2em] text-acid backdrop-blur-sm"
               >
-                Dec 25
+                {t.event.dec25Short}
               </span>
             </article>
           ))}
@@ -151,7 +152,7 @@ export default function Lineup() {
 
       <div className="relative mx-auto mt-12 w-full max-w-[1400px] px-5 text-center sm:px-8">
         <Link href="/booking?qty=1" className="btn-acid px-7 py-4 text-[0.72rem]">
-          Be there — {EVENT.ticket.priceLabel}
+          {t.lineup.beThere(EVENT.ticket.priceLabel)}
         </Link>
       </div>
     </section>

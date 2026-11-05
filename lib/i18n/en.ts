@@ -1,0 +1,315 @@
+export const en = {
+  nav: {
+    home: "Home",
+    lineup: "Lineup",
+    experience: "Experience",
+    sponsors: "Sponsors",
+    tickets: "Tickets",
+    getTickets: "Get Tickets",
+    menu: "Menu",
+    openMenu: "Open menu",
+    closeMenu: "Close menu",
+    getTicketsFrom: (price: string) => `Get Tickets — ${price}`,
+  },
+
+  event: {
+    subtitle: "Food Festival & DJ Party",
+    tagline: "FOOD FESTIVAL & DJ PARTY",
+    category: "General Entry",
+    dateShort: "DECEMBER 25",
+    dec25Short: "Dec 25",
+    yearConfirmed: "CONFIRMED",
+    yearPending: "TO BE ANNOUNCED",
+    presents: (organizer: string) => `${organizer} presents`,
+  },
+
+  hero: {
+    from: "From",
+    cta: (price: string) => `Get your ticket — ${price}`,
+    explore: "Explore the experience",
+    scroll: "Scroll",
+  },
+
+  countdown: {
+    saveTheDate: "Save the date",
+    year: (status: string) => `Year ${status}`,
+    date: "Date",
+    doorsOpen: "Doors open",
+    venue: "Venue",
+    noCountdown: "Countdown activates once the year is confirmed",
+    live: "The night is live",
+    label: "Countdown",
+    days: "Days",
+    hours: "Hours",
+    minutes: "Minutes",
+    seconds: "Seconds",
+  },
+
+  intro: {
+    section: "01 — The night",
+    statement:
+      "A FOOD FESTIVAL THAT TURNS INTO A DJ PARTY. ONE CROWD. ONE NIGHT. DECEMBER 25.",
+    para1: (name: string) =>
+      `${name} opens its gates at 3:00 PM and runs straight through to midnight — food stalls firing on all burners, DJs rolling from warm-up to closing, and a dance floor that keeps swelling after dark.`,
+    para2: (names: string, date: string) =>
+      `${names} — three names, three chapters of the same night. Come hungry, bring your crew, and stay until the last track fades over ${date}.`,
+    chipFood: "Food festival",
+    chipDj: "DJ party",
+    chipNight: "Night atmosphere",
+    chipEntry: (price: string) => `${price} entry`,
+    secure: "Secure your entry",
+    doors: "Doors 3:00 PM",
+    until: "Until 12:00 AM",
+    streetFood: "Street food · Live sets",
+  },
+
+  lineup: {
+    section: "02 — Lineup",
+    count: "Three performers",
+    headingTop: "THREE NAMES.",
+    headingBottom: "ONE NIGHT.",
+    intro: (names: string) =>
+      `The booth belongs to ${names} — one after another, from the first warm-up hour to the final drop.`,
+    performer: "Performer",
+    beThere: (price: string) => `Be there — ${price}`,
+    lines: {
+      "mr-percussion": "Rhythm on the decks",
+      yakee: "Hands in the air",
+      denon: "Deep into the night",
+    } as Record<string, string>,
+  },
+
+  experience: {
+    section: "03 — Experience",
+    hint: "Scroll to move through the night",
+    headingTop: "FOUR LAYERS",
+    headingBottom: "OF THE SAME NIGHT",
+    intro:
+      "Music, food, light and people stacking on top of each other until the whole room moves as one.",
+    panels: [
+      {
+        title: "The Music",
+        copy: (_time: string, _date: string) =>
+          "Mr. Percussion, YAKEE and DENON run the decks back to back — warm-up energy that keeps climbing until the closing set.",
+        chip: "Live DJ sets",
+        alt: "Dance floor under green lasers",
+      },
+      {
+        title: "The Food",
+        copy: (_time: string, _date: string) =>
+          "A full food festival riding alongside the music — plates, grills and street-food energy from the afternoon doors onward.",
+        chip: "Food festival",
+        alt: "Night food festival grills",
+      },
+      {
+        title: "The Lights",
+        copy: (_time: string, _date: string) =>
+          "Green lasers, rolling fog and hard strobes slicing the dark — the visual signature that makes December 25 look like nothing else.",
+        chip: "Laser show",
+        alt: "Green laser beams in fog",
+      },
+      {
+        title: "The Crowd",
+        copy: (time: string, date: string) =>
+          `${time} on ${date}. One crowd, one room, no empty floor — from the first hour to the last track.`,
+        chip: "Doors 3:00 PM",
+        alt: "Crowd with hands raised in fog",
+      },
+    ],
+    endOfStrip: "End of the strip",
+    keepScrolling: "Keep scrolling",
+  },
+  sponsors: {
+    section: "04 — Partners",
+    sub: "Organizer & main sponsors",
+    organizedBy: "Organized by",
+    blurb:
+      "Backed by three main partners covering the photography, fireworks and transport side of the night.",
+    roles: {
+      Photography: "Photography",
+      Fireworks: "Fireworks",
+      Transport: "Transport",
+    } as Record<string, string>,
+  },
+
+  tickets: {
+    section: "05 — Tickets",
+    generalEntry: "General entry",
+    priceNote: (name: string, subtitle: string, date: string, time: string) =>
+      `One price, one pass. ${name} — ${subtitle} on ${date}, ${time}.`,
+    gateNote: (gate: string, date: string) =>
+      `Advance price — ${gate} at the gate on ${date}.`,
+    details: { date: "Date", time: "Time", venue: "Venue", entry: "Entry" },
+    quantity: "Quantity",
+    maxPerBooking: (max: number) => `Max ${max} per booking`,
+    total: "Total",
+    bulletAccess: (category: string) =>
+      `${category} — access to the food festival & DJ party`,
+    bulletRef: "Booking reference issued instantly",
+    bulletCountdown: (date: string, year: string) => `Countdown live — ${date} ${year}`,
+    bulletYear: "Event year announced together with the venue",
+    continue: (total: string) => `Continue — ${total}`,
+    payNote: "Pay by transfer after booking — upload your slip on your ticket page",
+    remaining: (capacity: number) => `of ${capacity} tickets left`,
+    decrease: "Decrease quantity",
+    increase: "Increase quantity",
+  },
+
+  footer: {
+    explore: "Explore",
+    lineup: "Lineup",
+    mainSponsors: "Main sponsors",
+    blurb: (subtitle: string, date: string, time: string, organizer: string) =>
+      `${subtitle} — ${date}, ${time}. Presented by ${organizer}.`,
+    bookTickets: "Book tickets",
+    venueYear: (venue: string, status: string) => `${venue} · Year ${status}`,
+  },
+  booking: {
+    back: "Back to tickets",
+    step: "Step 01 — Your details",
+    headingTop: "BOOK YOUR",
+    headingBottom: "ENTRY",
+    soldOut: "This event is fully booked right now — no tickets remain.",
+    networkError: "Network error — please check your connection and try again.",
+    genericError: "Something went wrong. Please try again.",
+    validationFailed: "Validation failed. Please check the form.",
+    capacity: (remaining: number) =>
+      `Only ${remaining} ticket${remaining === 1 ? "" : "s"} left — reduce your quantity.`,
+    errors: {
+      nameRequired: "Please enter your full name",
+      nameTooLong: "Name is too long",
+      emailRequired: "Email is required",
+      emailInvalid: "Enter a valid email address",
+      emailTooLong: "Email is too long",
+      phoneInvalid: "Enter a valid phone number",
+      phoneTooLong: "Phone number is too long",
+      phoneChars: "Only numbers, spaces and + ( ) - are allowed",
+      qtyRequired: "Quantity is required",
+      qtyInt: "Quantity must be a whole number",
+      qtyMin: "Select at least 1 ticket",
+      qtyMax: (max: number) => `Maximum ${max} tickets per booking`,
+      notesTooLong: "Notes must be 300 characters or less",
+    },
+    fields: {
+      fullName: "Full name",
+      fullNamePlaceholder: "Your full name",
+      email: "Email",
+      emailPlaceholder: "you@example.com",
+      phone: "Phone",
+      phoneHint: "WhatsApp friendly",
+      phonePlaceholder: "+94 7X XXX XXXX",
+      tickets: "Tickets",
+      ticketsHint: (max: number) => `Max ${max}`,
+      ticketOption: (n: number) => `${n} ${n === 1 ? "ticket" : "tickets"}`,
+      notes: "Notes",
+      notesHint: "Optional",
+      notesPlaceholder: "Anything we should know…",
+    },
+    reserving: "Reserving…",
+    submit: (total: string) => `Confirm booking — ${total}`,
+    payNote:
+      "Pay by bank or mobile transfer after booking — upload your slip on the confirmation page",
+    summaryTitle: "Order summary",
+    rows: { event: "Event", date: "Date", time: "Time", venue: "Venue" },
+    total: "Total",
+    ticketsLeft: "Tickets left",
+    gateNote: (gate: string, date: string) =>
+      `Advance price · ${gate} at the gate on ${date}`,
+    whatNext: "What happens next",
+    steps: [
+      "You get a unique booking reference.",
+      "Open your confirmation ticket instantly.",
+      "Show the ticket reference at the entrance.",
+    ],
+  },
+  confirmation: {
+    noRefTitle: "No reference found",
+    noRefBody: "Open this page from your booking confirmation, or start a new booking.",
+    newBooking: "New booking",
+    backHome: "Back to home",
+    loading: "Loading your ticket…",
+    notFoundTitle: "Ticket not found",
+    retry: "Try again",
+    errors: {
+      notFound: "We could not find this booking.",
+      invalid: "Invalid booking reference.",
+      network: "Network error while loading your ticket.",
+      server: "We could not load this booking.",
+    },
+    created: "Booking created",
+    headingTop: "YOUR",
+    headingBottom: "TICKET",
+    refresh: "Refresh status",
+    refIntro: "Booking reference",
+    refOutro: (date: string) => `— keep it for ${date}.`,
+    status: {
+      pending: {
+        label: "Awaiting payment",
+        blurb: (_hours: number) =>
+          "Transfer the total below, then upload your payment slip on this page.",
+      },
+      awaiting: {
+        label: "Slip received",
+        blurb: (_hours: number) =>
+          "Your slip is in — we're verifying the transfer. Refresh this page for updates.",
+      },
+      confirmed: {
+        label: "Payment confirmed",
+        blurb: (_hours: number) =>
+          "You're fully booked in. Show this reference at the entrance.",
+      },
+      checkedIn: {
+        label: "Checked in",
+        blurb: (_hours: number) => "Entry recorded — enjoy the night.",
+      },
+      rejected: {
+        label: "Verification failed",
+        blurb: (_hours: number) =>
+          "Your slip could not be verified. Fix the issue and upload again.",
+      },
+      expired: {
+        label: "Booking expired",
+        blurb: (hours: number) =>
+          `The ${hours}-hour payment window passed. You can book again.`,
+      },
+    },
+    reasonPrefix: "Reason:",
+    details: { date: "Date", time: "Time", venue: "Venue", tickets: "Tickets" },
+    guest: "Guest",
+    total: "Total",
+    statusLabel: "Status",
+    entryStub: "Entry stub",
+    qty: (n: number) => `Qty ${n}`,
+    payment: "Payment",
+    uploadWithin: (hours: number) => `Upload within ${hours}h`,
+    toBeAnnounced: "Details to be announced",
+    amountDue: "Amount due",
+    transferNote: (reference: string) =>
+      `Transfer the exact amount, write ${reference} as the deposit note, then upload the slip.`,
+    bankTransfer: "Bank transfer",
+    bankFallback: "Bank",
+    paymentUnconfigured:
+      "Bank & wallet details will be announced shortly — your booking and reference stay valid, upload the slip here once you have paid.",
+    slip: "Payment slip",
+    chooseSlip: "Choose payment slip image",
+    formats: "JPG, PNG or WebP · max 5 MB",
+    uploading: "Uploading…",
+    uploadSlip: "Upload slip",
+    replaceSlip: "Replace slip",
+    uploadSuccess: "Slip uploaded — awaiting verification.",
+    slipStored: "Slip uploaded — waiting for verification.",
+    refreshLater: "Refresh this page after a while to check the status.",
+    uploadLater: "Upload becomes available once payment details are announced.",
+    uploadErrors: {
+      type: "Only JPG, PNG or WebP images are accepted.",
+      size: "File is too large — maximum 5 MB.",
+      network: "Network error — please try again.",
+      generic: "Upload failed.",
+      notAllowed: "This booking can no longer accept a slip. Contact the organizer.",
+      notFound: "Booking not found.",
+    },
+    bookAnother: "Book another ticket",
+  },
+};
+
+export type Dict = typeof en;

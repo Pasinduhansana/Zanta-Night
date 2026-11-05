@@ -1,7 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import { EVENT } from "@/lib/event-config";
+import { useT } from "@/components/providers/LanguageProvider";
 
 export default function Footer() {
+  const t = useT();
   return (
     <footer className="relative overflow-hidden border-t border-white/10 bg-abyss">
       <div className="mx-auto w-full max-w-[1400px] px-5 pt-16 sm:px-8 sm:pt-20">
@@ -11,34 +15,38 @@ export default function Footer() {
               ZANTA <span className="text-acid">NIGHT</span>
             </p>
             <p className="mt-3 text-sm leading-relaxed text-mist">
-              {EVENT.subtitle} — {EVENT.date.shortLabel}, {EVENT.time.label}. Presented by{" "}
-              {EVENT.organizer}.
+              {t.footer.blurb(
+                t.event.subtitle,
+                t.event.dateShort,
+                EVENT.time.label,
+                EVENT.organizer,
+              )}
             </p>
           </div>
 
           <nav aria-label="Footer navigation">
-            <p className="kicker text-acid">Explore</p>
+            <p className="kicker text-acid">{t.footer.explore}</p>
             <ul className="mt-4 space-y-2.5">
               {EVENT.nav.map((item) => (
-                <li key={item.label}>
+                <li key={item.key}>
                   <Link
                     href={item.href}
                     className="text-sm text-mist transition-colors hover:text-acid"
                   >
-                    {item.label}
+                    {t.nav[item.key]}
                   </Link>
                 </li>
               ))}
               <li>
                 <Link href="/booking" className="text-sm text-mist transition-colors hover:text-acid">
-                  Book tickets
+                  {t.footer.bookTickets}
                 </Link>
               </li>
             </ul>
           </nav>
 
           <div>
-            <p className="kicker text-acid">Lineup</p>
+            <p className="kicker text-acid">{t.footer.lineup}</p>
             <ul className="mt-4 space-y-2.5">
               {EVENT.performers.map((p) => (
                 <li key={p.slug} className="text-sm text-mist">
@@ -49,7 +57,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <p className="kicker text-acid">Main sponsors</p>
+            <p className="kicker text-acid">{t.footer.mainSponsors}</p>
             <ul className="mt-4 space-y-2.5">
               {EVENT.sponsors.map((s) => (
                 <li key={s.name} className="text-sm text-mist">
@@ -65,7 +73,10 @@ export default function Footer() {
             © {EVENT.organizer} · {EVENT.name}
           </p>
           <p className="text-[0.62rem] uppercase tracking-[0.24em] text-mist/70">
-            {EVENT.venue.statusLabel} · Year {EVENT.date.yearStatus}
+            {t.footer.venueYear(
+              EVENT.venue.statusLabel,
+              EVENT.date.year ? t.event.yearConfirmed : t.event.yearPending,
+            )}
           </p>
         </div>
       </div>

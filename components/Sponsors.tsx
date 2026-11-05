@@ -1,27 +1,30 @@
+"use client";
+
 import { Camera, Flame, Car, Star } from "lucide-react";
 import { EVENT } from "@/lib/event-config";
+import { useT } from "@/components/providers/LanguageProvider";
 
 const ICONS = [Camera, Flame, Car];
 
 export default function Sponsors() {
+  const t = useT();
   return (
     <section id="sponsors" className="relative border-y border-white/10 bg-abyss py-20 sm:py-28">
       <div className="mx-auto w-full max-w-[1400px] px-5 sm:px-8">
         <div className="flex items-center justify-between gap-6 border-b border-white/10 pb-5">
-          <span className="kicker text-acid">04 — Partners</span>
-          <span className="kicker text-mist">Organizer &amp; main sponsors</span>
+          <span className="kicker text-acid">{t.sponsors.section}</span>
+          <span className="kicker text-mist">{t.sponsors.sub}</span>
         </div>
 
         <div className="mt-10 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <span className="kicker text-mist">Organized by</span>
+            <span className="kicker text-mist">{t.sponsors.organizedBy}</span>
             <p className="mt-3 flex items-center gap-4 text-[clamp(2.4rem,7vw,5.4rem)] leading-[0.9] font-display tracking-tight text-metallic">
               {EVENT.organizer}
             </p>
           </div>
           <p className="max-w-xs text-sm leading-relaxed text-mist lg:pb-4">
-            Backed by three main partners covering the photography, fireworks and
-            transport side of the night.
+            {t.sponsors.blurb}
           </p>
         </div>
 
@@ -49,7 +52,7 @@ export default function Sponsors() {
                   <div className="mt-3 flex items-center gap-3 border-t border-white/10 pt-3">
                     <span className="h-1 w-1 rotate-45 bg-acid" />
                     <span className="text-[0.62rem] font-semibold uppercase tracking-[0.26em] text-mist">
-                      {sponsor.role}
+                      {t.sponsors.roles[sponsor.role] ?? sponsor.role}
                     </span>
                   </div>
                 </div>

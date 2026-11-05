@@ -57,6 +57,9 @@ export const EVENT = {
     price: 500,
     currency: "LKR",
     priceLabel: "LKR 500",
+    /** Price at the gate on the event day (advance/online price stays `price`). */
+    gatePrice: 600,
+    gatePriceLabel: "LKR 600",
     maxPerOrder: 10,
     /** Total stock available — adjust to the real allocation. */
     capacity: 500,
@@ -99,12 +102,12 @@ export const EVENT = {
   },
 
   nav: [
-    { label: "Home", href: "/#home" },
-    { label: "Lineup", href: "/#lineup" },
-    { label: "Experience", href: "/#experience" },
-    { label: "Sponsors", href: "/#sponsors" },
-    { label: "Tickets", href: "/#tickets" },
-  ],
+    { key: "home", href: "/#home" },
+    { key: "lineup", href: "/#lineup" },
+    { key: "experience", href: "/#experience" },
+    { key: "sponsors", href: "/#sponsors" },
+    { key: "tickets", href: "/#tickets" },
+  ] as const,
 } as const;
 
 /** Countdown target — only exists when the event year is confirmed. */

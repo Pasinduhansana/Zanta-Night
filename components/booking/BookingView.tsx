@@ -1,13 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm, useWatch, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, Loader2, Ticket, AlertTriangle } from "lucide-react";
-import { bookingSchema, type BookingFormValues, type BookingInput } from "@/lib/validation";
+import {
+  bookingSchema,
+  type BookingFormValues,
+  type BookingInput,
+} from "@/lib/validation";
 import { EVENT } from "@/lib/event-config";
+import { useT } from "@/components/providers/LanguageProvider";
+
+type ServerErrorState = {
+  code?: string;
+  status?: number;
+  message?: string;
+  data?: Record<string, unknown>;
+};
 
 type FieldProps = {
   label: string;
@@ -40,6 +52,7 @@ const inputClass =
   "mt-2 w-full border border-white/15 bg-abyss/60 px-4 py-3.5 text-bone placeholder:text-mist/40 outline-none transition-colors focus:border-acid focus:bg-abyss/90";
 
 export default function BookingView() {
+  const t = useT();
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialQty = Math.min(
@@ -48,8 +61,19 @@ export default function BookingView() {
   );
 
   const [submitting, setSubmitting] = useState(false);
-  const [serverError, setServerError] = useState<string | null>(null);
+  const [serverError, setServerError] = useState<ServerErrorState | null>(null);
   const [stock, setStock] = useState<{ remaining: number; capacity: number } | null>(null);
+
+  const messagesRef = useRef(t.booking.errors);
+  useEffect(() => {
+    messagesRef.current = t.booking.errors;
+  }, [t]);
+
+  const resolver = useMemo<Resolver<BookingFormValues, unknown, BookingInput>>(
+    () => (values, context, options) =>
+      zodResolver(bookingSchema(messagesRef.current))(values, context, options),
+    [],
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -74,7 +98,7 @@ export default function BookingView() {
     control,
     formState: { errors },
   } = useForm<BookingFormValues, unknown, BookingInput>({
-    resolver: zodResolver(bookingSchema),
+    resolver,
     defaultValues: {
       fullName: "",
       email: "",
@@ -89,6 +113,19 @@ export default function BookingView() {
   const quantity = Number(watchedQuantity || 1) || 1;
   const total = EVENT.ticket.price * quantity;
 
+  const serverErrorText = (() => {
+    if (!serverError) return null;
+    if (serverError.code === "capacity") {
+      return t.booking.capacity(Number(serverError.data?.remaining ?? 0));
+    }
+    if (serverError.code === "network") return t.booking.networkError;
+    if (serverError.code === "validation") return t.booking.validationFailed;
+    if (serverError.code === "server" || serverError.status === 500) {
+      return t.booking.genericError;
+    }
+    return serverError.message || t.booking.genericError;
+  })();
+
   const onSubmit = async (values: BookingInput) => {
     setSubmitting(true);
     setServerError(null);
@@ -102,14 +139,21 @@ export default function BookingView() {
         ok: boolean;
         booking?: { reference: string };
         error?: string;
+        code?: string;
+        data?: Record<string, unknown>;
       };
       if (!res.ok || !data.ok || !data.booking) {
-        setServerError(data.error ?? "Something went wrong. Please try again.");
+        setServerError({
+          code: data.code,
+          status: res.status,
+          message: data.error,
+          data: data.data,
+        });
         return;
       }
       router.push(`/confirmation?ref=${encodeURIComponent(data.booking.reference)}`);
     } catch {
-      setServerError("Network error — please check your connection and try again.");
+      setServerError({ code: "network" });
     } finally {
       setSubmitting(false);
     }
@@ -122,58 +166,62 @@ export default function BookingView() {
         className="inline-flex items-center gap-2 text-[0.65rem] font-semibold uppercase tracking-[0.26em] text-mist transition-colors hover:text-acid"
       >
         <ArrowLeft className="h-3.5 w-3.5" />
-        Back to tickets
+        {t.booking.back}
       </Link>
 
       <div className="mt-7 border-b border-white/10 pb-8">
-        <span className="kicker text-acid">Step 01 — Your details</span>
+        <span className="kicker text-acid">{t.booking.step}</span>
         <h1 className="mt-3 text-[clamp(2.6rem,7vw,5.5rem)] leading-[0.9]">
-          BOOK YOUR
-          <span className="block text-metallic-sheen">ENTRY</span>
+          {t.booking.headingTop}
+          <span className="block text-metallic-sheen">{t.booking.headingBottom}</span>
         </h1>
       </div>
 
       <div className="mt-10 grid gap-8 lg:grid-cols-[1.3fr_1fr]">
         {/* form */}
         <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-6">
-          {serverError && (
+          {serverErrorText && (
             <p className="flex items-center gap-2.5 border border-[#ff7a6b]/40 bg-[#ff7a6b]/10 px-4 py-3 text-sm text-[#ffb3aa]">
               <AlertTriangle className="h-4 w-4 shrink-0" />
-              {serverError}
+              {serverErrorText}
             </p>
           )}
           {soldOut && (
             <p className="flex items-center gap-2.5 border border-[#ff7a6b]/40 bg-[#ff7a6b]/10 px-4 py-3 text-sm text-[#ffb3aa]">
               <AlertTriangle className="h-4 w-4 shrink-0" />
-              This event is fully booked right now — no tickets remain.
+              {t.booking.soldOut}
             </p>
           )}
 
-          <Field label="Full name" error={errors.fullName?.message}>
+          <Field label={t.booking.fields.fullName} error={errors.fullName?.message}>
             <input
               type="text"
               autoComplete="name"
-              placeholder="Your full name"
+              placeholder={t.booking.fields.fullNamePlaceholder}
               className={inputClass}
               {...register("fullName")}
             />
           </Field>
 
           <div className="grid gap-6 sm:grid-cols-2">
-            <Field label="Email" error={errors.email?.message}>
+            <Field label={t.booking.fields.email} error={errors.email?.message}>
               <input
                 type="email"
                 autoComplete="email"
-                placeholder="you@example.com"
+                placeholder={t.booking.fields.emailPlaceholder}
                 className={inputClass}
                 {...register("email")}
               />
             </Field>
-            <Field label="Phone" error={errors.phone?.message} hint="WhatsApp friendly">
+            <Field
+              label={t.booking.fields.phone}
+              error={errors.phone?.message}
+              hint={t.booking.fields.phoneHint}
+            >
               <input
                 type="tel"
                 autoComplete="tel"
-                placeholder="+94 7X XXX XXXX"
+                placeholder={t.booking.fields.phonePlaceholder}
                 className={inputClass}
                 {...register("phone")}
               />
@@ -182,23 +230,27 @@ export default function BookingView() {
 
           <div className="grid gap-6 sm:grid-cols-2">
             <Field
-              label="Tickets"
+              label={t.booking.fields.tickets}
               error={errors.quantity?.message}
-              hint={`Max ${EVENT.ticket.maxPerOrder}`}
+              hint={t.booking.fields.ticketsHint(EVENT.ticket.maxPerOrder)}
             >
               <select className={inputClass} {...register("quantity")}>
                 {Array.from({ length: EVENT.ticket.maxPerOrder }, (_, i) => i + 1).map((n) => (
                   <option key={n} value={n} className="bg-abyss">
-                    {n} {n === 1 ? "ticket" : "tickets"}
+                    {t.booking.fields.ticketOption(n)}
                   </option>
                 ))}
               </select>
             </Field>
 
-            <Field label="Notes" error={errors.notes?.message} hint="Optional">
+            <Field
+              label={t.booking.fields.notes}
+              error={errors.notes?.message}
+              hint={t.booking.fields.notesHint}
+            >
               <textarea
                 rows={3}
-                placeholder="Anything we should know…"
+                placeholder={t.booking.fields.notesPlaceholder}
                 className={`${inputClass} resize-none`}
                 {...register("notes")}
               />
@@ -213,19 +265,18 @@ export default function BookingView() {
             {submitting ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Reserving…
+                {t.booking.reserving}
               </>
             ) : (
               <>
                 <Ticket className="h-4 w-4" strokeWidth={2.5} />
-                Confirm booking — LKR {total.toLocaleString("en-US")}
+                {t.booking.submit(`LKR ${total.toLocaleString("en-US")}`)}
               </>
             )}
           </button>
 
           <p className="text-[0.62rem] uppercase tracking-[0.2em] text-mist/60">
-            Pay by bank or mobile transfer after booking — upload your slip on the
-            confirmation page
+            {t.booking.payNote}
           </p>
         </form>
 
@@ -233,16 +284,19 @@ export default function BookingView() {
         <aside className="lg:sticky lg:top-28 lg:h-fit">
           <div className="border border-white/12 bg-forest/50">
             <div className="flex items-center justify-between border-b border-white/10 px-5 py-3.5">
-              <span className="kicker text-acid">Order summary</span>
-              <span className="kicker text-mist">{EVENT.ticket.category}</span>
+              <span className="kicker text-acid">{t.booking.summaryTitle}</span>
+              <span className="kicker text-mist">{t.event.category}</span>
             </div>
 
             <div className="space-y-3.5 px-5 py-5 text-sm">
               {[
-                ["Event", `${EVENT.name} — ${EVENT.subtitle}`],
-                ["Date", EVENT.date.shortLabel],
-                ["Time", EVENT.time.label],
-                ["Venue", EVENT.venue.statusLabel],
+                [t.booking.rows.event, `${EVENT.name} — ${t.event.subtitle}`],
+                [
+                  t.booking.rows.date,
+                  `${t.event.dateShort}${EVENT.date.year ? ` ${EVENT.date.year}` : ""}`,
+                ],
+                [t.booking.rows.time, EVENT.time.label],
+                [t.booking.rows.venue, EVENT.venue.statusLabel],
               ].map(([k, v]) => (
                 <div key={k} className="flex items-start justify-between gap-6">
                   <span className="text-mist">{k}</span>
@@ -263,27 +317,32 @@ export default function BookingView() {
             </div>
 
             <div className="flex items-center justify-between border-t border-white/10 bg-abyss/60 px-5 py-4">
-              <span className="kicker text-mist">Total</span>
+              <span className="kicker text-mist">{t.booking.total}</span>
               <span className="font-display text-3xl leading-none text-acid tabular-nums">
                 LKR {total.toLocaleString("en-US")}
               </span>
             </div>
+            <p className="border-t border-white/10 px-5 py-3 text-[0.6rem] uppercase tracking-[0.18em] text-acid/90">
+              {t.booking.gateNote(EVENT.ticket.gatePriceLabel, t.event.dateShort)}
+            </p>
             {stock && (
               <div className="flex items-center justify-between border-t border-white/10 px-5 py-3 text-[0.62rem] uppercase tracking-[0.18em] text-mist">
-                <span>Tickets left</span>
+                <span>{t.booking.ticketsLeft}</span>
                 <span className={stock.remaining <= 20 ? "text-[#ffc53d]" : "text-bone"}>
-                  {stock.remaining} of {stock.capacity}
+                  {stock.remaining} / {stock.capacity}
                 </span>
               </div>
             )}
           </div>
 
           <div className="mt-4 border border-white/10 bg-abyss/50 p-5">
-            <p className="kicker text-mist">What happens next</p>
+            <p className="kicker text-mist">{t.booking.whatNext}</p>
             <ol className="mt-3 space-y-2 text-[0.8rem] text-mist">
-              <li>1 — You get a unique booking reference.</li>
-              <li>2 — Open your confirmation ticket instantly.</li>
-              <li>3 — Show the ticket reference at the entrance.</li>
+              {t.booking.steps.map((step, i) => (
+                <li key={step}>
+                  {i + 1} — {step}
+                </li>
+              ))}
             </ol>
           </div>
         </aside>

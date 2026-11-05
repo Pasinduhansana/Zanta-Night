@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display: var(--font-anton), "Arial Narrow", Impact, sans-serif;
-  --font-sans: var(--font-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-anton), var(--font-sinhala), "Arial Narrow", Impact, sans-serif;
+  --font-sans: var(--font-grotesk), var(--font-sinhala), ui-sans-serif, system-ui, sans-serif;
 
   --color-abyss: #001a14;
   --color-forest: #002d20;

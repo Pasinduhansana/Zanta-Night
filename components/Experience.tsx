@@ -5,43 +5,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { EVENT } from "@/lib/event-config";
+import { useT } from "@/components/providers/LanguageProvider";
 
 const PANELS = [
-  {
-    index: "01",
-    title: "The Music",
-    copy: "Mr. Percussion, YAKEE and DENON run the decks back to back — warm-up energy that keeps climbing until the closing set.",
-    image: EVENT.images.party,
-    alt: "Dance floor under green lasers",
-    chip: "Live DJ sets",
-  },
-  {
-    index: "02",
-    title: "The Food",
-    copy: "A full food festival riding alongside the music — plates, grills and street-food energy from the afternoon doors onward.",
-    image: EVENT.images.food,
-    alt: "Night food festival grills",
-    chip: "Food festival",
-  },
-  {
-    index: "03",
-    title: "The Lights",
-    copy: "Green lasers, rolling fog and hard strobes slicing the dark — the visual signature that makes December 25 look like nothing else.",
-    image: EVENT.images.lights,
-    alt: "Green laser beams in fog",
-    chip: "Laser show",
-  },
-  {
-    index: "04",
-    title: "The Crowd",
-    copy: `${EVENT.time.label} on ${EVENT.date.shortLabel}. One crowd, one room, no empty floor — from the first hour to the last track.`,
-    image: EVENT.images.introCrowd,
-    alt: "Crowd with hands raised in fog",
-    chip: "Doors 3:00 PM",
-  },
+  { index: "01", image: EVENT.images.party, alt: "Dance floor under green lasers" },
+  { index: "02", image: EVENT.images.food, alt: "Night food festival grills" },
+  { index: "03", image: EVENT.images.lights, alt: "Green laser beams in fog" },
+  { index: "04", image: EVENT.images.introCrowd, alt: "Crowd with hands raised in fog" },
 ];
 
 export default function Experience() {
+  const t = useT();
   const rootRef = useRef<HTMLElement | null>(null);
   const pinRef = useRef<HTMLDivElement | null>(null);
   const viewportRef = useRef<HTMLDivElement | null>(null);
@@ -122,18 +96,15 @@ export default function Experience() {
 
       <div className="relative mx-auto w-full max-w-[1400px] px-5 sm:px-8">
         <div className="flex items-center justify-between gap-6 border-b border-white/10 pb-5">
-          <span className="kicker text-acid">03 — Experience</span>
-          <span className="kicker text-mist hidden sm:block">Scroll to move through the night</span>
+          <span className="kicker text-acid">{t.experience.section}</span>
+          <span className="kicker text-mist hidden sm:block">{t.experience.hint}</span>
         </div>
         <div className="mt-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <h2 className="text-[clamp(2.4rem,6.5vw,5.4rem)] leading-[0.92] tracking-tight">
-            FOUR LAYERS
-            <span className="block text-metallic-sheen">OF THE SAME NIGHT</span>
+            {t.experience.headingTop}
+            <span className="block text-metallic-sheen">{t.experience.headingBottom}</span>
           </h2>
-          <p className="max-w-sm text-mist lg:pb-2">
-            Music, food, light and people stacking on top of each other until the whole
-            room moves as one.
-          </p>
+          <p className="max-w-sm text-mist lg:pb-2">{t.experience.intro}</p>
         </div>
       </div>
 
@@ -156,17 +127,19 @@ export default function Experience() {
                       <span className="font-display text-[3.4rem] leading-none text-hollow-acid sm:text-[4.4rem]">
                         {panel.index}
                       </span>
-                      <span className="chip chip-acid">{panel.chip}</span>
+                      <span className="chip chip-acid">{t.experience.panels[i].chip}</span>
                     </div>
                     <h3 className="mt-6 text-[clamp(2.2rem,5vw,4rem)] leading-[0.95]">
-                      {panel.title}
+                      {t.experience.panels[i].title}
                     </h3>
-                    <p className="mt-5 max-w-md text-mist sm:text-lg">{panel.copy}</p>
+                    <p className="mt-5 max-w-md text-mist sm:text-lg">
+                      {t.experience.panels[i].copy(EVENT.time.label, t.event.dateShort)}
+                    </p>
                   </div>
 
                   {i === PANELS.length - 1 && (
                     <Link href="/booking?qty=1" className="btn-acid mt-8 w-fit px-7 py-4 text-[0.72rem]">
-                      Get your ticket — {EVENT.ticket.priceLabel}
+                      {t.hero.cta(EVENT.ticket.priceLabel)}
                     </Link>
                   )}
                 </div>
@@ -205,7 +178,7 @@ export default function Experience() {
               01 / 0{PANELS.length}
             </span>
             <span className="hidden text-[0.6rem] uppercase tracking-[0.3em] text-mist sm:block">
-              {active === PANELS.length - 1 ? "End of the strip" : "Keep scrolling"}
+              {active === PANELS.length - 1 ? t.experience.endOfStrip : t.experience.keepScrolling}
             </span>
           </div>
           <div className="h-[3px] w-full bg-white/12">

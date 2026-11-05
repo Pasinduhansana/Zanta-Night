@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { EVENT, getEventTarget } from "@/lib/event-config";
+import { useT } from "@/components/providers/LanguageProvider";
 import { CalendarDays, Clock, MapPin } from "lucide-react";
 
 type Units = { days: string; hours: string; minutes: string; seconds: string };
@@ -16,42 +17,51 @@ function split(ms: number): Units {
   return { days: String(days), hours: pad(hours), minutes: pad(minutes), seconds: pad(seconds) };
 }
 
-const CELLS: { key: keyof Units; label: string }[] = [
-  { key: "days", label: "Days" },
-  { key: "hours", label: "Hours" },
-  { key: "minutes", label: "Minutes" },
-  { key: "seconds", label: "Seconds" },
+const CELLS: { key: keyof Units }[] = [
+  { key: "days" },
+  { key: "hours" },
+  { key: "minutes" },
+  { key: "seconds" },
 ];
 
 const subscribeNothing = () => () => {};
 
 function DatePlate() {
+  const t = useT();
   return (
     <div className="w-full max-w-md border border-white/12 bg-forest/50 backdrop-blur-md">
       <div className="flex items-center justify-between border-b border-white/10 px-4 py-2.5">
-        <span className="kicker text-acid">Save the date</span>
-        <span className="kicker text-mist">Year {EVENT.date.yearStatus}</span>
+        <span className="kicker text-acid">{t.countdown.saveTheDate}</span>
+        <span className="kicker text-mist">
+          {t.countdown.year(EVENT.date.year ? t.event.yearConfirmed : t.event.yearPending)}
+        </span>
       </div>
       <div className="grid grid-cols-3 divide-x divide-white/10">
         <div className="px-4 py-4">
           <CalendarDays className="mb-2 h-4 w-4 text-acid" />
-          <p className="font-display text-2xl leading-none text-bone">{EVENT.date.shortLabel}</p>
-          <p className="mt-1.5 text-[0.58rem] uppercase tracking-[0.2em] text-mist">Date</p>
+          <p className="font-display text-2xl leading-none text-bone">{t.event.dateShort}</p>
+          <p className="mt-1.5 text-[0.58rem] uppercase tracking-[0.2em] text-mist">
+            {t.countdown.date}
+          </p>
         </div>
         <div className="px-4 py-4">
           <Clock className="mb-2 h-4 w-4 text-acid" />
           <p className="font-display text-2xl leading-none text-bone">3PM—12AM</p>
-          <p className="mt-1.5 text-[0.58rem] uppercase tracking-[0.2em] text-mist">Doors open</p>
+          <p className="mt-1.5 text-[0.58rem] uppercase tracking-[0.2em] text-mist">
+            {t.countdown.doorsOpen}
+          </p>
         </div>
         <div className="px-4 py-4">
           <MapPin className="mb-2 h-4 w-4 text-acid" />
           <p className="font-display text-2xl leading-none text-bone">VTA Ground Thalgaswela</p>
-          <p className="mt-1.5 text-[0.58rem] uppercase tracking-[0.2em] text-mist">Venue</p>
+          <p className="mt-1.5 text-[0.58rem] uppercase tracking-[0.2em] text-mist">
+            {t.countdown.venue}
+          </p>
         </div>
       </div>
       {!EVENT.date.year && (
         <p className="border-t border-white/10 px-4 py-2.5 text-[0.6rem] uppercase tracking-[0.18em] text-mist/80">
-          Countdown activates once the year is confirmed
+          {t.countdown.noCountdown}
         </p>
       )}
     </div>
@@ -59,6 +69,7 @@ function DatePlate() {
 }
 
 export default function Countdown() {
+  const t = useT();
   const target = getEventTarget();
   const mounted = useSyncExternalStore(
     subscribeNothing,
@@ -93,8 +104,10 @@ export default function Countdown() {
   if (diff <= 0) {
     return (
       <div className="w-full max-w-md border border-acid/50 bg-acid/10 px-5 py-4 backdrop-blur-md">
-        <p className="kicker text-acid">The night is live</p>
-        <p className="mt-1 font-display text-3xl">ZANTA NIGHT — {EVENT.date.shortLabel}</p>
+        <p className="kicker text-acid">{t.countdown.live}</p>
+        <p className="mt-1 font-display text-3xl">
+          ZANTA NIGHT — {t.event.dateShort}
+        </p>
       </div>
     );
   }
@@ -104,9 +117,9 @@ export default function Countdown() {
   return (
     <div className="w-full max-w-md border border-white/12 bg-forest/50 backdrop-blur-md">
       <div className="flex items-center justify-between border-b border-white/10 px-4 py-2.5">
-        <span className="kicker text-acid">Countdown</span>
+        <span className="kicker text-acid">{t.countdown.label}</span>
         <span className="kicker text-mist">
-          {EVENT.date.shortLabel} · {EVENT.date.year}
+          {t.event.dateShort} · {EVENT.date.year}
         </span>
       </div>
       <div className="grid grid-cols-4 gap-px bg-white/10">
@@ -116,7 +129,7 @@ export default function Countdown() {
               {units[cell.key]}
             </p>
             <p className="mt-2 text-[0.52rem] font-semibold uppercase tracking-[0.22em] text-mist">
-              {cell.label}
+              {t.countdown[cell.key]}
             </p>
           </div>
         ))}

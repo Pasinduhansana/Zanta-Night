@@ -12,24 +12,27 @@ export async function POST(request: Request, ctx: { params: Promise<{ ref: strin
     form = await request.formData();
   } catch {
     return NextResponse.json(
-      { ok: false, error: "Expected multipart form data." },
+      { ok: false, code: "generic", error: "Expected multipart form data." },
       { status: 400 },
     );
   }
 
   const file = form.get("file");
   if (!file || typeof file === "string") {
-    return NextResponse.json({ ok: false, error: "Missing payment slip file." }, { status: 400 });
+    return NextResponse.json(
+      { ok: false, code: "generic", error: "Missing payment slip file." },
+      { status: 400 },
+    );
   }
   if (!ALLOWED_TYPES.includes(file.type)) {
     return NextResponse.json(
-      { ok: false, error: "Only JPG, PNG or WebP images are accepted." },
+      { ok: false, code: "type", error: "Only JPG, PNG or WebP images are accepted." },
       { status: 415 },
     );
   }
   if (file.size > MAX_SIZE) {
     return NextResponse.json(
-      { ok: false, error: "File is too large — maximum 5 MB." },
+      { ok: false, code: "size", error: "File is too large — maximum 5 MB." },
       { status: 413 },
     );
   }
@@ -44,11 +47,14 @@ export async function POST(request: Request, ctx: { params: Promise<{ ref: strin
     return NextResponse.json({ ok: true, booking });
   } catch (err) {
     if (err instanceof BookingError) {
-      return NextResponse.json({ ok: false, error: err.message }, { status: err.status });
+      return NextResponse.json(
+        { ok: false, error: err.message, code: err.code, data: err.data },
+        { status: err.status },
+      );
     }
     console.error("[zanta] slip upload failed:", err);
     return NextResponse.json(
-      { ok: false, error: "Could not store your slip. Please try again." },
+      { ok: false, code: "server", error: "Could not store your slip. Please try again." },
       { status: 500 },
     );
   }

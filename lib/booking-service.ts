@@ -21,9 +21,18 @@ const UPLOADABLE_STATUSES: BookingStatus[] = [
 
 export class BookingError extends Error {
   status: number;
-  constructor(message: string, status = 400) {
+  code?: string;
+  data?: Record<string, unknown>;
+  constructor(
+    message: string,
+    status = 400,
+    code?: string,
+    data?: Record<string, unknown>,
+  ) {
     super(message);
     this.status = status;
+    this.code = code;
+    this.data = data;
     this.name = "BookingError";
   }
 }
@@ -207,6 +216,8 @@ export async function createBooking(input: BookingInput): Promise<BookingPublic>
     throw new BookingError(
       `Only ${remaining} ticket${remaining === 1 ? "" : "s"} left — reduce your quantity.`,
       409,
+      "capacity",
+      { remaining },
     );
   }
 
@@ -314,10 +325,11 @@ export async function uploadSlip(
       ).lean();
       if (!doc) {
         const exists = await Booking.findOne({ reference: ref }).lean();
-        if (!exists) throw new BookingError("Booking not found.", 404);
+        if (!exists) throw new BookingError("Booking not found.", 404, "notFound");
         throw new BookingError(
           "This booking can no longer accept a slip. Contact the organizer.",
           409,
+          "notAllowed",
         );
       }
       return toPublic({ ...doc, storage: "mongo" });
@@ -328,9 +340,13 @@ export async function uploadSlip(
   }
 
   const rec = memoryStore.get(ref);
-  if (!rec) throw new BookingError("Booking not found.", 404);
+  if (!rec) throw new BookingError("Booking not found.", 404, "notFound");
   if (!UPLOADABLE_STATUSES.includes(rec.status)) {
-    throw new BookingError("This booking can no longer accept a slip. Contact the organizer.", 409);
+    throw new BookingError(
+      "This booking can no longer accept a slip. Contact the organizer.",
+      409,
+      "notAllowed",
+    );
   }
   rec.status = "awaiting_verification";
   rec.rejectReason = null;

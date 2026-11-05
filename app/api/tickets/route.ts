@@ -10,11 +10,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const parsed = bookingSchema.safeParse(body);
+  const parsed = bookingSchema().safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
       {
         ok: false,
+        code: "validation",
         error: "Validation failed",
         issues: parsed.error.flatten().fieldErrors,
       },
@@ -27,11 +28,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true, booking }, { status: 201 });
   } catch (err) {
     if (err instanceof BookingError) {
-      return NextResponse.json({ ok: false, error: err.message }, { status: err.status });
+      return NextResponse.json(
+        { ok: false, error: err.message, code: err.code, data: err.data },
+        { status: err.status },
+      );
     }
     console.error("[zanta] booking creation failed:", err);
     return NextResponse.json(
-      { ok: false, error: "Could not create your booking. Please try again." },
+      { ok: false, code: "server", error: "Could not create your booking. Please try again." },
       { status: 500 },
     );
   }

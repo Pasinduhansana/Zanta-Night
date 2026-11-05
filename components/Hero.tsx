@@ -6,6 +6,7 @@ import Image from "next/image";
 import { ArrowDown, Ticket } from "lucide-react";
 import { gsap } from "@/lib/gsap";
 import { EVENT } from "@/lib/event-config";
+import { useT } from "@/components/providers/LanguageProvider";
 import Countdown from "./Countdown";
 import Motes from "./Motes";
 
@@ -35,6 +36,7 @@ function Chars({ text, base, className = "" }: { text: string; base: number; cla
 }
 
 export default function Hero() {
+  const t = useT();
   const rootRef = useRef<HTMLElement | null>(null);
   const bgRef = useRef<HTMLDivElement | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
@@ -124,12 +126,12 @@ export default function Hero() {
         {/* top row */}
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-2.5">
-            <span className="chip chip-acid">{EVENT.date.shortLabel}</span>
+            <span className="chip chip-acid">{t.event.dateShort}</span>
             <span className="chip">{EVENT.time.label}</span>
             <span className="chip hidden sm:inline-flex">{EVENT.venue.statusLabel}</span>
           </div>
           <p className="kicker fade-up text-mist" style={{ ["--d" as string]: "0.1s" }}>
-            {EVENT.organizer} presents
+            {t.event.presents(EVENT.organizer)}
           </p>
         </div>
 
@@ -139,12 +141,12 @@ export default function Hero() {
             className="kicker fade-up inline-block text-acid"
             style={{ ["--d" as string]: "0.25s" }}
           >
-            {EVENT.subtitle}
+            {t.event.subtitle}
           </span>
 
           <h1 className="mt-5">
             <span className="sr-only">
-              {EVENT.wordmark[0]} {EVENT.wordmark[1]} — {EVENT.subtitle}
+              {EVENT.wordmark[0]} {EVENT.wordmark[1]} — {t.event.subtitle}
             </span>
             <span aria-hidden className="block">
               <span className="block overflow-hidden pb-[0.06em]">
@@ -167,11 +169,11 @@ export default function Hero() {
           >
             <div className="grid h-32 w-32 place-items-center rounded-full border-2 border-abyss bg-acid text-abyss shadow-[0_18px_50px_-14px_rgba(182,255,0,.6)]">
               <div className="text-center leading-none">
-                <p className="text-[0.55rem] font-bold uppercase tracking-[0.3em]">From</p>
+                <p className="text-[0.55rem] font-bold uppercase tracking-[0.3em]">{t.hero.from}</p>
                 <p className="font-display text-[2.1rem] leading-none">LKR</p>
                 <p className="font-display text-[2.6rem] leading-none">500</p>
                 <p className="mt-1 text-[0.5rem] font-bold uppercase tracking-[0.24em]">
-                  {EVENT.ticket.category}
+                  {t.event.category}
                 </p>
               </div>
             </div>
@@ -182,7 +184,7 @@ export default function Hero() {
             style={{ ["--d" as string]: "1.05s" }}
           >
             <span className="font-display text-[clamp(1rem,2.3vw,1.7rem)] tracking-[0.26em] text-bone">
-              {EVENT.tagline}
+              {t.event.tagline}
             </span>
             <span aria-hidden className="hidden h-px w-24 bg-acid/70 sm:block" />
           </div>
@@ -208,10 +210,10 @@ export default function Hero() {
           >
             <Link href="/booking?qty=1" className="btn-acid px-7 py-4 text-[0.72rem]">
               <Ticket className="h-4 w-4" strokeWidth={2.5} />
-              Get your ticket — {EVENT.ticket.priceLabel}
+              {t.hero.cta(EVENT.ticket.priceLabel)}
             </Link>
             <Link href="/#experience" className="btn-ghost px-7 py-4 text-[0.72rem]">
-              Explore the experience
+              {t.hero.explore}
               <ArrowDown className="h-4 w-4" />
             </Link>
           </div>
@@ -228,7 +230,7 @@ export default function Hero() {
         className="fade-up absolute bottom-6 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-2 lg:flex"
         style={{ ["--d" as string]: "2s" }}
       >
-        <span className="text-[0.55rem] uppercase tracking-[0.4em] text-mist">Scroll</span>
+        <span className="text-[0.55rem] uppercase tracking-[0.4em] text-mist">{t.hero.scroll}</span>
         <span className="scroll-cue h-10 w-px bg-gradient-to-b from-acid to-transparent" />
       </div>
     </section>

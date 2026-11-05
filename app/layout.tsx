@@ -1,8 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Anton, Space_Grotesk } from "next/font/google";
+import { Anton, Noto_Sans_Sinhala, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { LanguageProvider } from "@/components/providers/LanguageProvider";
 import { EVENT } from "@/lib/event-config";
 
 const anton = Anton({
@@ -15,6 +16,12 @@ const anton = Anton({
 const grotesk = Space_Grotesk({
   variable: "--font-grotesk",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const sinhala = Noto_Sans_Sinhala({
+  variable: "--font-sinhala",
+  subsets: ["sinhala"],
   display: "swap",
 });
 
@@ -43,11 +50,16 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${anton.variable} ${grotesk.variable} h-full antialiased`}>
+    <html
+      lang="en"
+      className={`${anton.variable} ${grotesk.variable} ${sinhala.variable} h-full antialiased`}
+    >
       <body className="min-h-full flex flex-col bg-abyss text-bone">
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <LanguageProvider>
+          <Navbar />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </LanguageProvider>
       </body>
     </html>
   );
