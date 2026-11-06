@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { randomBytes } from "crypto";
 import { Booking } from "@/lib/models/Booking";
 import { EVENT } from "@/lib/event-config";
+import { deleteSlipObject, getSlipObject, makeSlipKey, putSlipObject, r2Enabled } from "@/lib/r2";
 import type { BookingInput, BookingPublic, BookingStatus, SlipInfo } from "@/lib/validation";
 
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -79,7 +80,7 @@ export async function connectDB(): Promise<typeof mongoose | null> {
 
 /* ----------------------------------------------------------- memory store */
 
-type MemorySlip = SlipInfo & { data: Buffer; uploadedAt: string };
+type MemorySlip = SlipInfo & { data?: Buffer; key?: string; uploadedAt: string };
 type MemoryRecord = BookingPublic & { slip?: MemorySlip | null };
 
 type MemoryStore = Map<string, MemoryRecord>;

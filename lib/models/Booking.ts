@@ -21,7 +21,10 @@ export type BookingAttrs = {
   notes?: string;
   rejectReason?: string;
   slip?: {
-    data: Buffer;
+    /** R2 object key — set when the slip is stored in Cloudflare R2. */
+    key?: string;
+    /** Raw image bytes — only for the non-R2 fallback store. */
+    data?: Buffer;
     contentType: string;
     fileName: string;
     size: number;
@@ -57,6 +60,7 @@ const BookingSchema = new Schema<BookingAttrs>(
     notes: { type: String, trim: true },
     rejectReason: { type: String, trim: true },
     slip: {
+      key: { type: String },
       data: { type: Buffer, select: false },
       contentType: { type: String },
       fileName: { type: String },
