@@ -25,7 +25,6 @@ function loadConfig(): R2Config | null {
       region: "auto",
       endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
       credentials: { accessKeyId, secretAccessKey },
-      requestTimeout: 15_000,
     }),
   };
 }
@@ -65,7 +64,7 @@ export async function putSlipObject(
 
 export async function getSlipObject(
   key: string,
-): Promise<{ data: Uint8Array; contentType: string } | null> {
+): Promise<{ data: Uint8Array<ArrayBuffer>; contentType: string } | null> {
   const cfg = getConfig();
   if (!cfg) return null;
   try {
@@ -73,7 +72,8 @@ export async function getSlipObject(
       new GetObjectCommand({ Bucket: cfg.bucket, Key: key }),
     );
     if (!res.Body) return null;
-    const data = await res.Body.transformToByteArray();
+    const received = await res.Body.transformToByteArray();
+    const data = new Uint8Array(received);
     return { data, contentType: res.ContentType ?? "image/jpeg" };
   } catch {
     return null;

@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { randomBytes } from "crypto";
 import { Booking } from "@/lib/models/Booking";
 import { EVENT } from "@/lib/event-config";
-import { deleteSlipObject, getSlipObject, makeSlipKey, putSlipObject, r2Enabled } from "@/lib/r2";
+import { deleteSlipObject, makeSlipKey, putSlipObject, r2Enabled } from "@/lib/r2";
 import type { BookingInput, BookingPublic, BookingStatus, SlipInfo } from "@/lib/validation";
 
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -305,8 +305,23 @@ export async function uploadSlip(
     // sharp unavailable — store the original upload as-is
   }
 
+  // Prefer Cloudflare R2: upload the object first, then store only its key.
+  // If R2 is unconfigured or the upload fails, fall back to the in-DB buffer.
+  let key: string | undefined;
+  if (r2Enabled()) {
+    const candidate = makeSlipKey(ref);
+    try {
+      await putSlipObject(candidate, processed, contentType);
+      key = candidate;
+    } catch (err) {
+      warnOnce(
+        `R2 slip upload failed (${err instanceof Error ? err.message : "unknown"}) — storing the slip in the database instead`,
+      );
+    }
+  }
+
   const slip = {
-    data: processed,
+    ...(key ? { key } : { data: processed }),
     contentType,
     fileName: file.fileName.slice(0, 120),
     size: processed.length,
@@ -316,6 +331,7 @@ export async function uploadSlip(
   const conn = await connectDB();
   if (conn) {
     try {
+      const previous = await Booking.findOne({ reference: ref }).select("slip.key").lean();
       const doc = await Booking.findOneAndUpdate(
         { reference: ref, status: { $in: UPLOADABLE_STATUSES } },
         {
@@ -326,13 +342,19 @@ export async function uploadSlip(
       ).lean();
       if (!doc) {
         const exists = await Booking.findOne({ reference: ref }).lean();
-        if (!exists) throw new BookingError("Booking not found.", 404, "notFound");
+        if (!exists) {
+          if (key) void deleteSlipObject(key);
+          throw new BookingError("Booking not found.", 404, "notFound");
+        }
+        if (key) void deleteSlipObject(key);
         throw new BookingError(
           "This booking can no longer accept a slip. Contact the organizer.",
           409,
           "notAllowed",
         );
       }
+      const prevKey = previous?.slip?.key;
+      if (key && prevKey && prevKey !== key) void deleteSlipObject(prevKey);
       return toPublic({ ...doc, storage: "mongo" });
     } catch (err) {
       if (err instanceof BookingError) throw err;
@@ -341,47 +363,70 @@ export async function uploadSlip(
   }
 
   const rec = memoryStore.get(ref);
-  if (!rec) throw new BookingError("Booking not found.", 404, "notFound");
+  if (!rec) {
+    if (key) void deleteSlipObject(key);
+    throw new BookingError("Booking not found.", 404, "notFound");
+  }
   if (!UPLOADABLE_STATUSES.includes(rec.status)) {
+    if (key) void deleteSlipObject(key);
     throw new BookingError(
       "This booking can no longer accept a slip. Contact the organizer.",
       409,
       "notAllowed",
     );
   }
+  const prevKey = rec.slip?.key;
   rec.status = "awaiting_verification";
   rec.rejectReason = null;
   rec.slip = {
-    data: slip.data,
-    contentType: slip.contentType,
-    fileName: slip.fileName,
-    size: slip.size,
+    ...slip,
     uploadedAt: slip.uploadedAt.toISOString(),
   };
+  if (key && prevKey && prevKey !== key) void deleteSlipObject(prevKey);
   return toPublic(rec);
 }
 
-export async function getSlip(
-  reference: string,
-): Promise<{ data: Buffer; contentType: string } | null> {
+export type SlipSource =
+  | { kind: "r2"; key: string }
+  | { kind: "buffer"; data: Buffer; contentType: string };
+
+/**
+ * lean() queries skip schema casting, so binary fields come back as BSON
+ * Binary objects — convert them to real Buffers before serving.
+ */
+function asBuffer(value: unknown): Buffer | null {
+  if (!value) return null;
+  if (Buffer.isBuffer(value)) return value;
+  if (value instanceof Uint8Array) return Buffer.from(value);
+  const candidate = value as { _bsontype?: string; buffer?: Uint8Array };
+  if (candidate._bsontype === "Binary" && candidate.buffer instanceof Uint8Array) {
+    return Buffer.from(candidate.buffer);
+  }
+  return null;
+}
+
+export async function getSlipSource(reference: string): Promise<SlipSource | null> {
   const ref = reference.trim().toUpperCase();
   const conn = await connectDB();
   if (conn) {
     try {
       const doc = await Booking.findOne({ reference: ref }).select("+slip.data").lean();
-      const data = doc?.slip?.data as Buffer | undefined;
-      if (doc && data) {
-        return { data, contentType: doc.slip?.contentType ?? "image/jpeg" };
+      const slip = doc?.slip;
+      if (slip) {
+        if (slip.key) return { kind: "r2", key: slip.key };
+        const data = asBuffer(slip.data);
+        if (data) return { kind: "buffer", data, contentType: slip.contentType ?? "image/jpeg" };
       }
       return null;
     } catch (err) {
       warnOnce(`Slip read failed (${err instanceof Error ? err.message : "unknown"})`);
     }
   }
-  const rec = memoryStore.get(ref);
-  if (rec?.slip?.data) {
-    return { data: rec.slip.data, contentType: rec.slip.contentType };
-  }
+  const slip = memoryStore.get(ref)?.slip;
+  if (!slip) return null;
+  if (slip.key) return { kind: "r2", key: slip.key };
+  const data = asBuffer(slip.data);
+  if (data) return { kind: "buffer", data, contentType: slip.contentType };
   return null;
 }
 
