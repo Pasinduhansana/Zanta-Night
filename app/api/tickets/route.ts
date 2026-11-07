@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { bookingSchema } from "@/lib/validation";
 import { BookingError, createBooking } from "@/lib/booking-service";
+import { readSessionToken, resolveSession } from "@/lib/auth-service";
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -20,6 +21,26 @@ export async function POST(request: Request) {
         issues: parsed.error.flatten().fieldErrors,
       },
       { status: 400 },
+    );
+  }
+
+  // Email ownership must be proven via OTP before a booking is accepted.
+  // The verified email lives in the session cookie — never in request params.
+  const session = await resolveSession(readSessionToken(request));
+  if (!session) {
+    return NextResponse.json(
+      { ok: false, code: "emailVerification", error: "Verify your email before submitting." },
+      { status: 403 },
+    );
+  }
+  if (session.email !== parsed.data.email.trim().toLowerCase()) {
+    return NextResponse.json(
+      {
+        ok: false,
+        code: "emailMismatch",
+        error: "The booking email must match the verified email.",
+      },
+      { status: 403 },
     );
   }
 

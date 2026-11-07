@@ -18,6 +18,7 @@ import {
 import { EVENT } from "@/lib/event-config";
 import type { BookingPublic, BookingStatus, SlipInfo } from "@/lib/validation";
 import { useT } from "@/components/providers/LanguageProvider";
+import QrCode from "@/components/QrCode";
 import type { Dict } from "@/lib/i18n/en";
 
 type State =
@@ -400,7 +401,7 @@ export default function ConfirmationView() {
             </div>
 
             <div className="mt-7">
-              <div className="barcode h-14 w-full bg-bone" />
+              <QrCode value={booking.reference} alt="" className="h-14 w-14 bg-white p-1" />
               <div className="mt-2 flex items-center justify-between text-[0.6rem] uppercase tracking-[0.3em] text-mist">
                 <span>{booking.reference}</span>
                 <span>{EVENT.organizer}</span>
@@ -428,7 +429,7 @@ export default function ConfirmationView() {
             </div>
 
             <div>
-              <div className="barcode h-16 w-full rotate-90 scale-x-[0.55] bg-bone opacity-90" />
+              <QrCode value={booking.reference} alt="" className="h-16 w-16 bg-white p-1" />
               <p className="mt-4 text-[0.72rem] font-bold uppercase tracking-[0.24em] text-acid">
                 {booking.reference}
               </p>

@@ -10,6 +10,7 @@ import {
   Loader2,
   LogIn,
   RefreshCw,
+  ScanLine,
   Search,
   X,
 } from "lucide-react";
@@ -245,6 +246,10 @@ export default function AdminPanel() {
           <h1 className="mt-2 text-[clamp(2.2rem,5vw,4rem)] leading-none">BOOKING CONTROL</h1>
         </div>
         <div className="flex flex-wrap gap-2.5">
+          <a href="/admin/scan" className="btn-acid px-4 py-2.5 text-[0.62rem]">
+            <ScanLine className="h-3.5 w-3.5" />
+            Scanner
+          </a>
           <button type="button" onClick={() => load(token)} className="btn-ghost px-4 py-2.5 text-[0.62rem]">
             {loading ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />

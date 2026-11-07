@@ -32,6 +32,9 @@ export type BookingAttrs = {
   };
   verifiedAt?: Date;
   checkedInAt?: Date;
+  /** Set atomically when individual tickets are issued after approval. */
+  ticketsIssued?: boolean;
+  ticketsSentAt?: Date;
 };
 
 const BookingSchema = new Schema<BookingAttrs>(
@@ -59,6 +62,8 @@ const BookingSchema = new Schema<BookingAttrs>(
     },
     notes: { type: String, trim: true },
     rejectReason: { type: String, trim: true },
+    ticketsIssued: { type: Boolean, default: false },
+    ticketsSentAt: { type: Date },
     slip: {
       key: { type: String },
       data: { type: Buffer, select: false },

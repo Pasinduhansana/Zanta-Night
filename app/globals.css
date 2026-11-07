@@ -269,20 +269,6 @@
 
 /* -------------------------------------------------------------------- ticket */
 
-.barcode {
-  background-image: repeating-linear-gradient(
-    90deg,
-    var(--color-abyss) 0 2px,
-    transparent 2px 5px,
-    var(--color-abyss) 5px 8px,
-    transparent 8px 10px,
-    var(--color-abyss) 10px 11px,
-    transparent 11px 15px,
-    var(--color-abyss) 15px 19px,
-    transparent 19px 21px
-  );
-}
-
 .perf-line {
   background-image: linear-gradient(
     to bottom,

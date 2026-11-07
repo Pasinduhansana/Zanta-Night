@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { checkAdmin } from "@/lib/admin-auth";
 import { applyAction, BookingError, type AdminAction } from "@/lib/booking-service";
+import { issueTickets } from "@/lib/tickets";
 
 const ACTIONS: AdminAction[] = ["confirm", "reject", "checkin"];
 
@@ -25,6 +26,18 @@ export async function POST(request: Request, ctx: { params: Promise<{ ref: strin
 
   try {
     const booking = await applyAction(ref, body.action as AdminAction, body.reason);
+    if (body.action === "confirm") {
+      try {
+        await issueTickets({
+          reference: booking.reference,
+          quantity: booking.quantity,
+          fullName: booking.fullName,
+          email: booking.email,
+        });
+      } catch (err) {
+        console.error("[zanta] ticket issuance failed:", err);
+      }
+    }
     return NextResponse.json({ ok: true, booking });
   } catch (err) {
     if (err instanceof BookingError) {

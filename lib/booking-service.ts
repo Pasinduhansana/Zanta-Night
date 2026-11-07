@@ -3,6 +3,7 @@ import { randomBytes } from "crypto";
 import { Booking } from "@/lib/models/Booking";
 import { EVENT } from "@/lib/event-config";
 import { deleteSlipObject, makeSlipKey, putSlipObject, r2Enabled } from "@/lib/r2";
+import { stripTags } from "@/lib/sanitize";
 import type { BookingInput, BookingPublic, BookingStatus, SlipInfo } from "@/lib/validation";
 
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -283,6 +284,51 @@ export async function listBookings(status?: BookingStatus): Promise<BookingPubli
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
+export async function hasBookingForEmail(email: string): Promise<boolean> {
+  const target = email.trim().toLowerCase();
+  if (!target) return false;
+  const conn = await connectDB();
+  if (conn) {
+    try {
+      const doc = await Booking.findOne({ email: target }).select("_id").lean();
+      if (doc) return true;
+    } catch (err) {
+      warnOnce(
+        `Booking email lookup failed (${err instanceof Error ? err.message : "unknown"})`,
+      );
+    }
+  }
+  for (const rec of memoryStore.values()) {
+    if (rec.email.trim().toLowerCase() === target) return true;
+  }
+  return false;
+}
+
+export async function listBookingsForEmail(email: string): Promise<BookingPublic[]> {
+  const target = email.trim().toLowerCase();
+  if (!target) return [];
+  await expireStale();
+  const out: BookingPublic[] = [];
+  const conn = await connectDB();
+  if (conn) {
+    try {
+      const docs = await Booking.find({ email: target })
+        .sort({ createdAt: -1 })
+        .limit(200)
+        .lean();
+      out.push(...docs.map((d) => toPublic({ ...d, storage: "mongo" as const })));
+    } catch (err) {
+      warnOnce(
+        `Failed to list bookings for email (${err instanceof Error ? err.message : "unknown"})`,
+      );
+    }
+  }
+  for (const rec of memoryStore.values()) {
+    if (rec.email.trim().toLowerCase() === target) out.push(toPublic(rec));
+  }
+  return out.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
 /* ---------------------------------------------------------------- slips */
 
 export async function uploadSlip(
@@ -302,7 +348,12 @@ export async function uploadSlip(
       .toBuffer();
     contentType = "image/jpeg";
   } catch {
-    // sharp unavailable — store the original upload as-is
+    // Reject anything the decoder cannot parse — MIME checks alone can be spoofed.
+    throw new BookingError(
+      "Only valid JPG, PNG or WebP images are accepted.",
+      415,
+      "type",
+    );
   }
 
   // Prefer Cloudflare R2: upload the object first, then store only its key.
@@ -469,7 +520,8 @@ export async function applyAction(
         update.rejectReason = "";
       } else if (action === "reject") {
         update.status = "rejected";
-        update.rejectReason = (reason ?? "").slice(0, 200) || "Slip could not be verified.";
+        update.rejectReason =
+          stripTags(reason ?? "").slice(0, 200) || "Slip could not be verified.";
       } else {
         update.status = "checked_in";
         update.checkedInAt = now;
@@ -499,7 +551,7 @@ export async function applyAction(
     rec.rejectReason = null;
   } else if (action === "reject") {
     rec.status = "rejected";
-    rec.rejectReason = (reason ?? "").slice(0, 200) || "Slip could not be verified.";
+    rec.rejectReason = stripTags(reason ?? "").slice(0, 200) || "Slip could not be verified.";
   } else {
     rec.status = "checked_in";
     rec.checkedInAt = now.toISOString();

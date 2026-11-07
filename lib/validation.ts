@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { EVENT } from "@/lib/event-config";
+import { stripTags } from "@/lib/sanitize";
 import type { Dict } from "@/lib/i18n/en";
 
 export type BookingMessages = Dict["booking"]["errors"];
@@ -25,9 +26,15 @@ export function bookingSchema(messages?: BookingMessages) {
   return z.object({
     fullName: z
       .string()
-      .trim()
-      .min(2, m.nameRequired)
-      .max(80, m.nameTooLong),
+      .max(200, m.nameTooLong)
+      .transform(stripTags)
+      .pipe(
+        z
+          .string()
+          .trim()
+          .min(2, m.nameRequired)
+          .max(80, m.nameTooLong),
+      ),
     email: z
       .string()
       .trim()
@@ -47,8 +54,9 @@ export function bookingSchema(messages?: BookingMessages) {
       .max(EVENT.ticket.maxPerOrder, m.qtyMax(EVENT.ticket.maxPerOrder)),
     notes: z
       .string()
-      .trim()
-      .max(300, m.notesTooLong)
+      .max(600, m.notesTooLong)
+      .transform(stripTags)
+      .pipe(z.string().trim().max(300, m.notesTooLong))
       .optional()
       .or(z.literal("")),
   });

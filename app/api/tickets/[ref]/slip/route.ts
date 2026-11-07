@@ -3,6 +3,7 @@ import { BookingError, uploadSlip } from "@/lib/booking-service";
 
 const MAX_SIZE = 5 * 1024 * 1024;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
+const ALLOWED_EXT = ["jpg", "jpeg", "png", "webp"];
 
 export async function POST(request: Request, ctx: { params: Promise<{ ref: string }> }) {
   const { ref } = await ctx.params;
@@ -27,6 +28,13 @@ export async function POST(request: Request, ctx: { params: Promise<{ ref: strin
   if (!ALLOWED_TYPES.includes(file.type)) {
     return NextResponse.json(
       { ok: false, code: "type", error: "Only JPG, PNG or WebP images are accepted." },
+      { status: 415 },
+    );
+  }
+  const ext = (file.name.split(".").pop() ?? "").toLowerCase();
+  if (!ALLOWED_EXT.includes(ext)) {
+    return NextResponse.json(
+      { ok: false, code: "type", error: "File must be a .jpg, .png or .webp image." },
       { status: 415 },
     );
   }
