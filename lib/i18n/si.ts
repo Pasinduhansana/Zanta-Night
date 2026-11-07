@@ -67,8 +67,8 @@ export const si: Dict = {
 
   lineup: {
     section: "02 — ප්‍රසංග පෝරමය",
-    count: "සංගීතඥයින් තිදෙනෙක්",
-    headingTop: "නම් තුනයි.",
+    count: "සංගීතඥයින් සිව්දෙනෙක්",
+    headingTop: "නම් හතරයි.",
     headingBottom: "එක් රාත්‍රියක්.",
     intro: (names: string) =>
       `${names} — පළමු වාර්මික පැයේ සිට අවසන් තට්ටුව දක්වා එකා පසු එකා ලෙස ඩීජී තට්ටුව අතට පත් වේ.`,
@@ -77,7 +77,8 @@ export const si: Dict = {
     lines: {
       "mr-percussion": "ඩීජී තට්ටුවේ රිද්මය",
       yakee: "අත් උඩට",
-      denon: "රාත්‍රියේ ගැඹුරට",
+      "project-m": "සංඥාවෙන් ඔබ්බට",
+      keetone: "අඳුරෙන් පසු යතුරු",
     } as Record<string, string>,
   },
 
@@ -92,7 +93,7 @@ export const si: Dict = {
       {
         title: "සංගීතය",
         copy: (_time: string, _date: string) =>
-          "Mr. Percussion, YAKEE සහ DENON ඩීජී තට්ටුව පිටිපස්සෙන් පිටිපස්සට ගනී — අවසන් වාදනය දක්වා නැඟෙන වාර්මික උණුසුමක්.",
+          "Mr. Percussion, YAKEE, Project M සහ KEETONE ඩීජී තට්ටුව පිටිපස්සෙන් පිටිපස්සට ගනී — අවසන් වාදනය දක්වා නැඟෙන වාර්මික උණුසුමක්.",
         chip: "සජීවී DJ වාදන",
         alt: "කොළ ලේසර් යට නර්තන බිම",
       },

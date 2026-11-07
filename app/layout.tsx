@@ -1,8 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Anton, Noto_Sans_Sinhala, Space_Grotesk } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { LanguageProvider } from "@/components/providers/LanguageProvider";
 import { EVENT } from "@/lib/event-config";
 
@@ -55,11 +53,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${anton.variable} ${grotesk.variable} ${sinhala.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-abyss text-bone">
-        <LanguageProvider>
-          <Navbar />
-          <main className="flex-1">{children}</main>
-          <Footer />
-        </LanguageProvider>
+        <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>
   );

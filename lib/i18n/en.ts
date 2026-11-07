@@ -65,8 +65,8 @@ export const en = {
 
   lineup: {
     section: "02 — Lineup",
-    count: "Three performers",
-    headingTop: "THREE NAMES.",
+    count: "Four performers",
+    headingTop: "FOUR NAMES.",
     headingBottom: "ONE NIGHT.",
     intro: (names: string) =>
       `The booth belongs to ${names} — one after another, from the first warm-up hour to the final drop.`,
@@ -75,7 +75,8 @@ export const en = {
     lines: {
       "mr-percussion": "Rhythm on the decks",
       yakee: "Hands in the air",
-      denon: "Deep into the night",
+      "project-m": "Beyond the signal",
+      keetone: "Keys after dark",
     } as Record<string, string>,
   },
 
@@ -90,7 +91,7 @@ export const en = {
       {
         title: "The Music",
         copy: (_time: string, _date: string) =>
-          "Mr. Percussion, YAKEE and DENON run the decks back to back — warm-up energy that keeps climbing until the closing set.",
+          "Mr. Percussion, YAKEE, Project M and KEETONE run the decks back to back — warm-up energy that keeps climbing until the closing set.",
         chip: "Live DJ sets",
         alt: "Dance floor under green lasers",
       },

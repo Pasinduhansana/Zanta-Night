@@ -354,43 +354,86 @@ function artistYakee() {
   return frame(w, h, defs(52) + s);
 }
 
-function artistDenon() {
+function artistProjectM() {
   const w = 800, h = 1067;
-  let s = artistBase(w, h, 63);
-  // perspective grid
-  let grid = "";
-  const hz = h * 0.5;
-  for (let i = -10; i <= 10; i++) {
-    grid += `<line x1="${r2(w / 2 + i * 44)}" y1="${hz}" x2="${r2(w / 2 + i * 210)}" y2="${h}" stroke="#008f55" stroke-opacity="0.45" stroke-width="2"/>`;
+  let s = artistBase(w, h, 71);
+  const rnd = mulberry32(717);
+  // signal network — nodes joined by thin links
+  const nodes = [];
+  for (let i = 0; i < 30; i++) {
+    nodes.push({ x: 50 + rnd() * (w - 100), y: 70 + rnd() * (h * 0.78) });
   }
-  for (let i = 1; i <= 12; i++) {
-    const y = hz + Math.pow(i / 12, 2.1) * (h - hz);
-    grid += `<line x1="0" y1="${r2(y)}" x2="${w}" y2="${r2(y)}" stroke="#008f55" stroke-opacity="0.35" stroke-width="1.6"/>`;
-  }
-  s += `<g>${grid}</g>`;
-  // twin jog wheels
-  for (const cx of [w * 0.3, w * 0.7]) {
-    const cy = h * 0.4;
-    s += `<circle cx="${cx}" cy="${cy}" r="120" fill="#00150e" stroke="#b6ff00" stroke-opacity="0.75" stroke-width="5"/>`;
-    s += `<circle cx="${cx}" cy="${cy}" r="86" fill="none" stroke="#39ff14" stroke-opacity="0.5" stroke-width="3" stroke-dasharray="6 12"/>`;
-    s += `<circle cx="${cx}" cy="${cy}" r="34" fill="#b6ff00" opacity="0.9"/>`;
-    for (let i = 0; i < 36; i++) {
-      const a = (i / 36) * Math.PI * 2;
-      s += `<line x1="${r2(cx + Math.cos(a) * 126)}" y1="${r2(cy + Math.sin(a) * 126)}" x2="${r2(cx + Math.cos(a) * 138)}" y2="${r2(cy + Math.sin(a) * 138)}" stroke="#c8d2ce" stroke-opacity="0.5" stroke-width="4"/>`;
+  let links = "";
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i + 1; j < nodes.length; j++) {
+      const d = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
+      if (d < 250) {
+        links += `<line x1="${r2(nodes[i].x)}" y1="${r2(nodes[i].y)}" x2="${r2(nodes[j].x)}" y2="${r2(nodes[j].y)}" stroke="#008f55" stroke-opacity="${r2(0.55 - d / 750)}" stroke-width="2"/>`;
+      }
     }
   }
-  // waveform bridge between decks
-  const rnd = mulberry32(636);
+  s += links;
+  for (const n of nodes) {
+    s += `<circle cx="${r2(n.x)}" cy="${r2(n.y)}" r="${r2(16 + rnd() * 20)}" fill="url(#limeGlow)" opacity="${r2(0.35 + rnd() * 0.5)}"/>`;
+    s += `<circle cx="${r2(n.x)}" cy="${r2(n.y)}" r="${r2(3 + rnd() * 8)}" fill="${rnd() > 0.72 ? "#b6ff00" : "#39ff14"}" opacity="${r2(0.55 + rnd() * 0.45)}"/>`;
+  }
+  // big M monogram inside a ring
+  const cx = w / 2, cy = h * 0.42;
+  s += `<circle cx="${cx}" cy="${cy}" r="132" fill="none" stroke="#b6ff00" stroke-opacity="0.7" stroke-width="5"/>`;
+  s += `<circle cx="${cx}" cy="${cy}" r="150" fill="url(#limeGlow)" opacity="0.55"/>`;
+  s += `<path d="M${cx - 74} ${cy + 70} L${cx - 74} ${cy - 70} L${cx - 8} ${cy + 22} L${cx + 58} ${cy - 70} L${cx + 58} ${cy + 70}" fill="none" stroke="#d6ff6e" stroke-width="17" stroke-linecap="round" stroke-linejoin="round"/>`;
+  // scan lines across the mark
+  let scan = "";
+  for (let i = 0; i < 26; i++) {
+    const y = cy - 160 + i * 13;
+    scan += `<line x1="${cx - 170}" y1="${y}" x2="${cx + 170}" y2="${y}" stroke="#008f55" stroke-opacity="${r2(0.1 + rnd() * 0.25)}" stroke-width="3"/>`;
+  }
+  s += scan;
+  s += vignette(w, h);
+  s += grain(w, h);
+  return frame(w, h, defs(71) + s);
+}
+
+function artistKeetone() {
+  const w = 800, h = 1067;
+  let s = artistBase(w, h, 84);
+  const rnd = mulberry32(848);
+  // stacked keyboard rows — white key blocks with black key notches
+  const rows = 4;
+  for (let row = 0; row < rows; row++) {
+    const y = h * 0.16 + row * 168;
+    const op = 0.95 - row * 0.16;
+    let keys = "";
+    const keyW = 62;
+    for (let x = -20, i = 0; x < w + 20; x += keyW, i++) {
+      keys += `<rect x="${x}" y="${y}" width="${keyW - 7}" height="118" rx="4" fill="${i % 7 === 2 || i % 7 === 6 ? "#00231a" : "#0b3a2b"}" stroke="#008f55" stroke-opacity="0.6" stroke-width="2"/>`;
+      if (i % 7 !== 6) {
+        keys += `<rect x="${x + keyW - 34}" y="${y}" width="26" height="72" rx="3" fill="#00110b" stroke="#39ff14" stroke-opacity="0.35" stroke-width="1.5"/>`;
+      }
+      if (rnd() > 0.72) {
+        keys += `<rect x="${x}" y="${y}" width="${keyW - 7}" height="118" rx="4" fill="#b6ff00" opacity="${r2(0.18 + rnd() * 0.5)}"/>`;
+      }
+    }
+    s += `<g opacity="${r2(op)}">${keys}</g>`;
+  }
+  // bass rings + waveform
+  const cx = w / 2, cy = h * 0.44;
+  for (const [r, o] of [[118, 0.8], [92, 0.55], [64, 0.35]]) {
+    s += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#b6ff00" stroke-opacity="${o}" stroke-width="6"/>`;
+  }
+  s += `<circle cx="${cx}" cy="${cy}" r="40" fill="#b6ff00" opacity="0.92"/>`;
+  s += `<circle cx="${cx}" cy="${cy}" r="160" fill="url(#limeGlow)"/>`;
   let wave = "";
-  for (let i = 0; i < 46; i++) {
-    const x = 70 + i * 15;
-    const bh = 20 + rnd() * 150;
-    wave += `<rect x="${x}" y="${r2(h * 0.72 - bh / 2)}" width="8" height="${r2(bh)}" rx="4" fill="${i % 3 === 0 ? "#b6ff00" : "#39ff14"}" opacity="${r2(0.45 + rnd() * 0.5)}"/>`;
+  const rnd2 = mulberry32(849);
+  for (let i = 0; i < 52; i++) {
+    const x = 44 + i * 14;
+    const bh = 24 + rnd2() * 190;
+    wave += `<rect x="${x}" y="${r2(h * 0.86 - bh / 2)}" width="9" height="${r2(bh)}" rx="4" fill="${i % 4 === 0 ? "#b6ff00" : "#39ff14"}" opacity="${r2(0.4 + rnd2() * 0.55)}"/>`;
   }
   s += wave;
   s += vignette(w, h);
   s += grain(w, h);
-  return frame(w, h, defs(63) + s);
+  return frame(w, h, defs(84) + s);
 }
 
 /* --------------------------------------------------------------------- main */
@@ -403,7 +446,8 @@ const files = {
   "exp-food.svg": expFood(),
   "artist-percussion.svg": artistPercussion(),
   "yakee.png": artistYakee(),
-  "artist-denon.svg": artistDenon(),
+  "artist-project-m.svg": artistProjectM(),
+  "artist-keetone.svg": artistKeetone(),
 };
 
 for (const [name, content] of Object.entries(files)) {
