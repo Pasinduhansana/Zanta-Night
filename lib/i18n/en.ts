@@ -286,7 +286,7 @@ export const en = {
       awaiting: {
         label: "Slip received",
         blurb: (_hours: number) =>
-          "Your slip is in — we're verifying the transfer. Refresh this page for updates.",
+          "Your slip is in — we're verifying the transfer. This page updates automatically.",
       },
       confirmed: {
         label: "Payment confirmed",
@@ -344,6 +344,26 @@ export const en = {
       notFound: "Booking not found.",
     },
     bookAnother: "Book another ticket",
+  },
+
+  ticket: {
+    lockedKicker: "TICKET LOCKED",
+    lockedTitle: "UPLOAD YOUR SLIP",
+    lockedBody:
+      "Your ticket tears open as soon as your payment slip is uploaded — the full ticket unlocks once the payment is approved.",
+    partialKicker: "AWAITING APPROVAL",
+    partialNote:
+      "The entry stub stays sealed until your payment is approved — this page updates automatically.",
+    approvedKicker: "PAYMENT APPROVED",
+    download: {
+      title: "Download ticket",
+      hint: "Keep a copy on your phone — the QR code gets scanned at the entrance.",
+      png: "Download PNG",
+      jpg: "Download JPG",
+      pdf: "Download PDF",
+      preparing: "Preparing…",
+      error: "Could not create the file — please try again.",
+    },
   },
 
   auth: {

@@ -14,6 +14,7 @@ import {
 import type { BookingPublic, BookingStatus } from "@/lib/validation";
 import { useT } from "@/components/providers/LanguageProvider";
 import QrCode from "@/components/QrCode";
+import TicketDownload from "@/components/tickets/TicketDownload";
 import type { Dict } from "@/lib/i18n/en";
 
 type MyTicket = {
@@ -291,7 +292,7 @@ export default function MyTicketsView() {
                 <p className="px-5 py-4 text-sm text-mist">{t.auth.tickets.notIssued}</p>
               )}
 
-              <div className="border-t border-white/10 px-5 py-3">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 px-5 py-3">
                 <Link
                   href={`/confirmation?ref=${encodeURIComponent(booking.reference)}`}
                   className="inline-flex items-center gap-2 text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-mist transition-colors hover:text-acid"
@@ -299,6 +300,9 @@ export default function MyTicketsView() {
                   <ExternalLink className="h-3.5 w-3.5" />
                   {t.auth.tickets.openBooking}
                 </Link>
+                {(booking.status === "confirmed" || booking.status === "checked_in") && (
+                  <TicketDownload booking={booking} statusLabel={ui.label} compact />
+                )}
               </div>
             </div>
           );

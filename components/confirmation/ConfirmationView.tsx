@@ -9,16 +9,19 @@ import {
   Clock,
   Home,
   Loader2,
+  Lock,
   RefreshCw,
   Ticket,
   Upload,
   CheckCircle2,
   XCircle,
 } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 import { EVENT } from "@/lib/event-config";
 import type { BookingPublic, BookingStatus, SlipInfo } from "@/lib/validation";
 import { useT } from "@/components/providers/LanguageProvider";
 import QrCode from "@/components/QrCode";
+import TicketDownload from "@/components/tickets/TicketDownload";
 import type { Dict } from "@/lib/i18n/en";
 
 type State =
@@ -69,6 +72,35 @@ function statusUi(status: BookingStatus, t: Dict) {
     label: entry.label,
     blurb: entry.blurb(EVENT.payment.windowHours),
   };
+}
+
+/**
+ * Zig-zag clip-path used for the torn edge of the darkened stub veil.
+ * `left` = jagged edge down the left side (desktop stub), `top` = across the
+ * top edge (mobile stub, which stacks below the main ticket body).
+ */
+function jaggedEdge(axis: "left" | "top", teeth = 16): string {
+  const pts: string[] = [];
+  const steps = teeth * 2;
+  for (let i = 0; i <= steps; i++) {
+    const p = (i / steps) * 100;
+    const zig = i % 2 === 0 ? 0 : 2.4;
+    pts.push(axis === "left" ? `${zig}% ${p}%` : `${p}% ${zig}%`);
+  }
+  if (axis === "left") pts.push("100% 100%", "100% 0%");
+  else pts.push("100% 100%", "0% 100%");
+  return `polygon(${pts.join(", ")})`;
+}
+
+const TEAR_LEFT = jaggedEdge("left");
+const TEAR_TOP = jaggedEdge("top");
+
+type TicketPhase = "locked" | "partial" | "full";
+
+function ticketPhase(status: BookingStatus): TicketPhase {
+  if (status === "confirmed" || status === "checked_in") return "full";
+  if (status === "awaiting_verification") return "partial";
+  return "locked";
 }
 
 function uploadErrorText(
@@ -122,6 +154,8 @@ export default function ConfirmationView() {
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  const bookingStatus = state.status === "ready" ? state.booking.status : null;
+
   const loadBooking = useCallback(async () => {
     if (!ref) return;
     setState({ status: "loading" });
@@ -152,6 +186,29 @@ export default function ConfirmationView() {
       cancelled = true;
     };
   }, []);
+
+  // While the slip awaits verification, poll quietly so the approved ticket
+  // reveal (tear-open + downloads) happens without a manual refresh.
+  useEffect(() => {
+    if (!ref || bookingStatus !== "awaiting_verification") return;
+    let cancelled = false;
+    const id = window.setInterval(() => {
+      void fetchBooking(ref).then((next) => {
+        if (cancelled || next.status !== "ready") return;
+        setState((prev) => {
+          if (prev.status !== "ready") return prev;
+          return prev.booking.status !== next.booking.status ||
+            prev.booking.verifiedAt !== next.booking.verifiedAt
+            ? next
+            : prev;
+        });
+      });
+    }, 5000);
+    return () => {
+      cancelled = true;
+      window.clearInterval(id);
+    };
+  }, [ref, bookingStatus]);
 
   const applyBooking = (booking: BookingPublic) =>
     setState({ status: "ready", booking });
@@ -275,6 +332,7 @@ export default function ConfirmationView() {
     booking.status !== "checked_in" &&
     booking.status !== "expired";
   const canUpload = showPayment && UPLOADABLE.includes(booking.status);
+  const phase = ticketPhase(booking.status);
 
   const details: [string, string][] = [
     [t.confirmation.details.date, t.event.dateShort],
@@ -337,8 +395,37 @@ export default function ConfirmationView() {
         </div>
       </div>
 
-      {/* ------------------------------------------------------------ stub */}
-      <div className="relative mt-7 overflow-hidden border border-acid/30 bg-forest shadow-[0_40px_90px_-40px_rgba(0,0,0,0.9)]">
+      {/* ------------------------------------------ ticket reveal (3 phases) */}
+      <AnimatePresence mode="wait" initial={false}>
+        {phase === "locked" ? (
+          <motion.div
+            key="locked"
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -14, transition: { duration: 0.3 } }}
+            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+            className="relative mt-7 overflow-hidden border border-dashed border-white/25 bg-forest/30"
+          >
+            <div className="flex flex-col items-center gap-4 px-6 py-14 text-center">
+              <span className="flex h-14 w-14 items-center justify-center rounded-full border border-acid/40 bg-abyss/70">
+                <Lock className="h-6 w-6 text-acid" strokeWidth={2} />
+              </span>
+              <span className="kicker text-mist">{t.ticket.lockedKicker}</span>
+              <h2 className="font-display text-3xl leading-none text-bone">
+                {t.ticket.lockedTitle}
+              </h2>
+              <p className="max-w-md text-sm text-mist">{t.ticket.lockedBody}</p>
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="ticket"
+            initial={{ opacity: 0, y: 26, rotate: -0.35 }}
+            animate={{ opacity: 1, y: 0, rotate: 0 }}
+            exit={{ opacity: 0, y: -12, transition: { duration: 0.3 } }}
+            transition={{ type: "spring", stiffness: 110, damping: 17 }}
+            className="relative mt-7 overflow-hidden border border-acid/30 bg-forest shadow-[0_40px_90px_-40px_rgba(0,0,0,0.9)]"
+          >
         <div className="flex flex-col md:flex-row">
           <div className="flex-1 p-6 sm:p-8">
             <div className="flex flex-wrap items-start justify-between gap-4">
@@ -416,7 +503,7 @@ export default function ConfirmationView() {
           </div>
           <div className="border-t border-dashed border-white/25 md:hidden" />
 
-          <div className="flex w-full flex-col justify-between gap-6 bg-abyss/60 p-6 md:w-56 md:p-7">
+          <div className="relative flex w-full flex-col justify-between gap-6 overflow-hidden bg-abyss/60 p-6 md:w-56 md:p-7">
             <div>
               <p className="kicker text-acid">{t.confirmation.entryStub}</p>
               <p className="mt-4 font-display text-4xl leading-[0.95] text-bone">
@@ -437,9 +524,106 @@ export default function ConfirmationView() {
                 {t.confirmation.qty(booking.quantity)}
               </p>
             </div>
+
+            {/* torn-edge veil: stub stays sealed until the admin approves */}
+            <AnimatePresence>
+              {phase === "partial" && (
+                <motion.div
+                  key="veil-desktop"
+                  aria-hidden
+                  className="absolute inset-0 hidden origin-right md:block"
+                  style={{
+                    clipPath: TEAR_LEFT,
+                    backgroundColor: "rgba(0,0,0,0.85)",
+                    backdropFilter: "blur(3px)",
+                  }}
+                  initial={{ scaleX: 0, opacity: 0 }}
+                  animate={{ scaleX: 1, opacity: 1 }}
+                  exit={{
+                    x: 44,
+                    opacity: 0,
+                    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+                  }}
+                  transition={{ delay: 0.28, duration: 0.5, ease: [0.65, 0, 0.35, 1] }}
+                >
+                  <div className="flex h-full flex-col items-center justify-center gap-3 px-3 text-center">
+                    <Lock className="h-5 w-5 text-acid" strokeWidth={2} />
+                    <span className="text-[0.52rem] font-semibold uppercase leading-relaxed tracking-[0.2em] text-mist">
+                      {t.ticket.partialKicker}
+                    </span>
+                  </div>
+                </motion.div>
+              )}
+              {phase === "partial" && (
+                <motion.div
+                  key="veil-mobile"
+                  aria-hidden
+                  className="absolute inset-0 origin-bottom md:hidden"
+                  style={{
+                    clipPath: TEAR_TOP,
+                    backgroundColor: "rgba(0,0,0,0.85)",
+                    backdropFilter: "blur(3px)",
+                  }}
+                  initial={{ scaleY: 0, opacity: 0 }}
+                  animate={{ scaleY: 1, opacity: 1 }}
+                  exit={{
+                    y: 44,
+                    opacity: 0,
+                    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+                  }}
+                  transition={{ delay: 0.28, duration: 0.5, ease: [0.65, 0, 0.35, 1] }}
+                >
+                  <div className="flex h-full flex-col items-center justify-center gap-3 px-3 text-center">
+                    <Lock className="h-5 w-5 text-acid" strokeWidth={2} />
+                    <span className="text-[0.52rem] font-semibold uppercase leading-relaxed tracking-[0.2em] text-mist">
+                      {t.ticket.partialKicker}
+                    </span>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
-      </div>
+
+        {phase === "full" && (
+          <motion.span
+            key="sweep"
+            aria-hidden
+            className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-acid/20 to-transparent"
+            initial={{ x: "-100%", opacity: 0.9 }}
+            animate={{ x: "330%", opacity: 0 }}
+            transition={{ duration: 1.15, ease: "easeOut" }}
+          />
+        )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {phase === "partial" && (
+        <motion.p
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.5 }}
+          className="mt-4 flex items-center gap-2 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[#ffc53d]"
+        >
+          <Clock className="h-3.5 w-3.5 shrink-0" />
+          {t.ticket.partialNote}
+        </motion.p>
+      )}
+
+      {phase === "full" && (
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="mt-7 border border-acid/30 bg-forest/40 p-5"
+        >
+          <p className="kicker text-acid">{t.ticket.approvedKicker}</p>
+          <div className="mt-4">
+            <TicketDownload booking={booking} statusLabel={ui.label} />
+          </div>
+        </motion.div>
+      )}
 
       {/* -------------------------------------------------- payment & slip */}
       {showPayment && (
