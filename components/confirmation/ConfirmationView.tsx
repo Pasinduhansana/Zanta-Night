@@ -216,7 +216,7 @@ export default function ConfirmationView() {
   const handleUpload = async () => {
     if (!pendingFile || !ref) return;
     const file = pendingFile;
-    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+    if (!["image/jpeg", "image/png", "image/webp", "application/pdf"].includes(file.type)) {
       setUpload({ phase: "error", code: "type" });
       return;
     }
@@ -707,7 +707,7 @@ export default function ConfirmationView() {
                     <input
                       ref={fileInputRef}
                       type="file"
-                      accept="image/jpeg,image/png,image/webp"
+                      accept="image/jpeg,image/png,image/webp,application/pdf"
                       className="hidden"
                       onChange={(e) => {
                         setPendingFile(e.target.files?.[0] ?? null);

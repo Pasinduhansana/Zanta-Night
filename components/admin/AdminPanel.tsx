@@ -10,6 +10,7 @@ import {
   Loader2,
   LogIn,
   RefreshCw,
+  RotateCcw,
   ScanLine,
   Search,
   X,
@@ -67,7 +68,9 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [actionBusy, setActionBusy] = useState<string | null>(null);
-  const [slipView, setSlipView] = useState<{ ref: string; url: string } | null>(null);
+  const [slipView, setSlipView] = useState<
+    { ref: string; url: string; contentType: string } | null
+  >(null);
 
   const load = useCallback(async (activeToken: string) => {
     setLoading(true);
@@ -122,12 +125,16 @@ export default function AdminPanel() {
     void load(next);
   };
 
-  const doAction = async (ref: string, action: "confirm" | "reject" | "checkin") => {
+  const doAction = async (
+    ref: string,
+    action: "confirm" | "reject" | "checkin" | "revert",
+  ) => {
     let reason: string | undefined;
     if (action === "reject") {
       reason = window.prompt("Reason shown to the guest:", "Slip could not be verified.") ?? undefined;
       if (reason === null) return;
     }
+    if (action === "revert" && !window.confirm("Revert this check-in to Confirmed?")) return;
     setActionBusy(`${ref}:${action}`);
     try {
       const res = await fetch(`/api/admin/bookings/${encodeURIComponent(ref)}`, {
@@ -158,7 +165,11 @@ export default function AdminPanel() {
         return;
       }
       const blob = await res.blob();
-      setSlipView({ ref, url: URL.createObjectURL(blob) });
+      setSlipView({
+        ref,
+        url: URL.createObjectURL(blob),
+        contentType: res.headers.get("content-type") ?? "",
+      });
     } catch {
       setError("Could not load slip.");
     }
@@ -466,10 +477,25 @@ export default function AdminPanel() {
                       </button>
                     )}
                     {b.status === "checked_in" && (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[0.58rem] font-bold uppercase tracking-[0.14em] text-volt">
-                        <BadgeCheck className="h-3.5 w-3.5" />
-                        Done
-                      </span>
+                      <>
+                        <button
+                          type="button"
+                          disabled={actionBusy === `${b.reference}:revert`}
+                          onClick={() => doAction(b.reference, "revert")}
+                          className="inline-flex items-center gap-1.5 border border-white/20 px-2.5 py-1.5 text-[0.58rem] font-bold uppercase tracking-[0.14em] text-mist transition-colors hover:border-acid hover:text-acid disabled:opacity-50"
+                        >
+                          {actionBusy === `${b.reference}:revert` ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          ) : (
+                            <RotateCcw className="h-3.5 w-3.5" />
+                          )}
+                          Revert check-in
+                        </button>
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[0.58rem] font-bold uppercase tracking-[0.14em] text-volt">
+                          <BadgeCheck className="h-3.5 w-3.5" />
+                          Done
+                        </span>
+                      </>
                     )}
                   </div>
                 </td>
@@ -513,13 +539,23 @@ export default function AdminPanel() {
                 <X className="h-5 w-5" />
               </button>
             </div>
-            {/* blob URLs cannot use next/image optimization */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={slipView.url}
-              alt={`Payment slip for ${slipView.ref}`}
-              className="max-h-[74vh] w-full object-contain"
-            />
+            {slipView.contentType === "application/pdf" ? (
+              <iframe
+                src={slipView.url}
+                title={`Payment slip for ${slipView.ref}`}
+                className="h-[74vh] w-full"
+              />
+            ) : (
+              <>
+                {/* blob URLs cannot use next/image optimization */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={slipView.url}
+                  alt={`Payment slip for ${slipView.ref}`}
+                  className="max-h-[74vh] w-full object-contain"
+                />
+              </>
+            )}
           </div>
         </div>
       )}

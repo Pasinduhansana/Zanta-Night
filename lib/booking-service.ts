@@ -358,21 +358,25 @@ export async function uploadSlip(
 
   let processed = file.buffer;
   let contentType = file.contentType;
-  try {
-    const sharp = (await import("sharp")).default;
-    processed = await sharp(file.buffer)
-      .rotate()
-      .resize({ width: 1600, withoutEnlargement: true })
-      .jpeg({ quality: 82 })
-      .toBuffer();
-    contentType = "image/jpeg";
-  } catch {
-    // Reject anything the decoder cannot parse — MIME checks alone can be spoofed.
-    throw new BookingError(
-      "Only valid JPG, PNG or WebP images are accepted.",
-      415,
-      "type",
-    );
+  if (file.contentType !== "application/pdf") {
+    try {
+      const sharp = (await import("sharp")).default;
+      processed = await sharp(file.buffer)
+        .rotate()
+        .resize({ width: 1600, withoutEnlargement: true })
+        .jpeg({ quality: 82 })
+        .toBuffer();
+      contentType = "image/jpeg";
+    } catch {
+      // Reject anything the decoder cannot parse — MIME checks alone can be spoofed.
+      throw new BookingError(
+        "Only valid JPG, PNG or WebP images are accepted.",
+        415,
+        "type",
+      );
+    }
+  } else if (file.buffer.subarray(0, 5).toString("ascii") !== "%PDF-") {
+    throw new BookingError("The uploaded PDF is invalid.", 415, "type");
   }
 
   // Prefer Cloudflare R2: upload the object first, then store only its key.
@@ -502,7 +506,7 @@ export async function getSlipSource(reference: string): Promise<SlipSource | nul
 
 /* ------------------------------------------------------------ admin ops */
 
-export type AdminAction = "confirm" | "reject" | "checkin";
+export type AdminAction = "confirm" | "reject" | "checkin" | "revert";
 
 export async function applyAction(
   reference: string,
@@ -516,6 +520,7 @@ export async function applyAction(
     confirm: ["pending", "awaiting_verification", "rejected"],
     reject: ["pending", "awaiting_verification"],
     checkin: ["confirmed"],
+    revert: ["checked_in"],
   };
   const fail = (msg: string): never => {
     throw new BookingError(msg, 409);
@@ -541,9 +546,12 @@ export async function applyAction(
         update.status = "rejected";
         update.rejectReason =
           stripTags(reason ?? "").slice(0, 200) || "Slip could not be verified.";
-      } else {
+      } else if (action === "checkin") {
         update.status = "checked_in";
         update.checkedInAt = now;
+      } else {
+        update.status = "confirmed";
+        update.checkedInAt = null;
       }
 
       const doc = await Booking.findOneAndUpdate(
@@ -571,9 +579,12 @@ export async function applyAction(
   } else if (action === "reject") {
     rec.status = "rejected";
     rec.rejectReason = stripTags(reason ?? "").slice(0, 200) || "Slip could not be verified.";
-  } else {
+  } else if (action === "checkin") {
     rec.status = "checked_in";
     rec.checkedInAt = now.toISOString();
+  } else {
+    rec.status = "confirmed";
+    rec.checkedInAt = null;
   }
   return toPublic(rec);
 }

@@ -3,8 +3,8 @@ import { BookingError, findBookingForEmail, uploadSlip } from "@/lib/booking-ser
 import { readSessionToken, resolveSession } from "@/lib/auth-service";
 
 const MAX_SIZE = 5 * 1024 * 1024;
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const ALLOWED_EXT = ["jpg", "jpeg", "png", "webp"];
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
+const ALLOWED_EXT = ["jpg", "jpeg", "png", "webp", "pdf"];
 
 export async function POST(request: Request, ctx: { params: Promise<{ ref: string }> }) {
   const { ref } = await ctx.params;
@@ -36,14 +36,14 @@ export async function POST(request: Request, ctx: { params: Promise<{ ref: strin
   }
   if (!ALLOWED_TYPES.includes(file.type)) {
     return NextResponse.json(
-      { ok: false, code: "type", error: "Only JPG, PNG or WebP images are accepted." },
+      { ok: false, code: "type", error: "Only JPG, PNG, WebP or PDF files are accepted." },
       { status: 415 },
     );
   }
   const ext = (file.name.split(".").pop() ?? "").toLowerCase();
   if (!ALLOWED_EXT.includes(ext)) {
     return NextResponse.json(
-      { ok: false, code: "type", error: "File must be a .jpg, .png or .webp image." },
+      { ok: false, code: "type", error: "File must be a .jpg, .png, .webp or .pdf file." },
       { status: 415 },
     );
   }

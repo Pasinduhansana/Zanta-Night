@@ -3,7 +3,7 @@ import { checkAdmin } from "@/lib/admin-auth";
 import { applyAction, BookingError, type AdminAction } from "@/lib/booking-service";
 import { issueTickets } from "@/lib/tickets";
 
-const ACTIONS: AdminAction[] = ["confirm", "reject", "checkin"];
+const ACTIONS: AdminAction[] = ["confirm", "reject", "checkin", "revert"];
 
 export async function POST(request: Request, ctx: { params: Promise<{ ref: string }> }) {
   const denied = checkAdmin(request);

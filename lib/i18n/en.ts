@@ -327,8 +327,8 @@ export const en = {
     paymentUnconfigured:
       "Bank & wallet details will be announced shortly — your booking and reference stay valid, upload the slip here once you have paid.",
     slip: "Payment slip",
-    chooseSlip: "Choose payment slip image",
-    formats: "JPG, PNG or WebP · max 5 MB",
+    chooseSlip: "Choose payment slip",
+    formats: "JPG, PNG, WebP or PDF · max 5 MB",
     uploading: "Uploading…",
     uploadSlip: "Upload slip",
     replaceSlip: "Replace slip",
@@ -337,7 +337,7 @@ export const en = {
     refreshLater: "Refresh this page after a while to check the status.",
     uploadLater: "Upload becomes available once payment details are announced.",
     uploadErrors: {
-      type: "Only JPG, PNG or WebP images are accepted.",
+      type: "Only JPG, PNG, WebP or PDF files are accepted.",
       size: "File is too large — maximum 5 MB.",
       network: "Network error — please try again.",
       generic: "Upload failed.",
