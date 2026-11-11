@@ -13,8 +13,7 @@ export function smtpConfigured(): boolean {
   return Boolean(
     process.env.SMTP_HOST &&
       process.env.SMTP_USER &&
-      process.env.SMTP_PASS &&
-      process.env.MAIL_FROM,
+      process.env.SMTP_PASS,
   );
 }
 
@@ -34,7 +33,7 @@ export async function sendTicketEmail(input: TicketMailInput): Promise<boolean> 
   if (!smtpConfigured()) {
     console.warn(
       "[zanta] SMTP is not configured — ticket email skipped. " +
-        "Set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS and MAIL_FROM to enable sending.",
+        "Set SMTP_HOST, SMTP_PORT, SMTP_USER and SMTP_PASS to enable sending.",
     );
     return false;
   }
@@ -122,6 +121,10 @@ export async function sendTicketEmail(input: TicketMailInput): Promise<boolean> 
     host: process.env.SMTP_HOST,
     port,
     secure: port === 465,
+    tls: {
+      rejectUnauthorized:
+        process.env.NODE_ENV === "production" || process.env.SMTP_ALLOW_SELF_SIGNED !== "true",
+    },
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS,
@@ -129,10 +132,20 @@ export async function sendTicketEmail(input: TicketMailInput): Promise<boolean> 
   });
 
   await transport.sendMail({
-    from: process.env.MAIL_FROM,
+    from: process.env.MAIL_FROM?.trim() || `ZANTA NIGHT <${process.env.SMTP_USER}>`,
+    replyTo: process.env.SMTP_USER,
     to: input.to,
-    subject: `Your ZANTA NIGHT tickets — ${input.reference}`,
+    subject: `Your ZANTA NIGHT tickets are ready — ${input.reference}`,
     html,
+    text: [
+      `Your ZANTA NIGHT tickets are confirmed, ${input.name}.`,
+      `Booking: ${input.reference}`,
+      `Event: ${EVENT.date.shortLabel} · ${EVENT.time.label} · ${EVENT.venue.statusLabel}`,
+      "",
+      ...input.tickets.map(
+        (ticket) => `Ticket ${ticket.seatIndex}: ${ticket.ticketId} (show the QR code in this email at entry)`,
+      ),
+    ].join("\n"),
     attachments,
   });
   return true;

@@ -198,7 +198,7 @@ async function phaseB(otpCol, ref) {
 
   r = await api("/api/auth/request-otp", { method: "POST", body: { email: EMAIL } });
   check(
-    "B2 live OTP request accepted (Resend)",
+    "B2 live OTP request accepted (SMTP)",
     r.status === 200 && r.data?.ok === true && r.data?.retryAfter === 60,
     JSON.stringify(r.data),
   );

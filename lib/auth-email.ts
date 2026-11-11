@@ -1,9 +1,5 @@
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 import { OTP_TTL_MS } from "@/lib/models/OtpCode";
-
-export function resendConfigured(): boolean {
-  return Boolean(process.env.RESEND_API_KEY);
-}
 
 function escapeHtml(value: string): string {
   return value
@@ -14,17 +10,10 @@ function escapeHtml(value: string): string {
 }
 
 /**
- * Sends the 6-digit login code via Resend (RESEND_API_KEY / RESEND_FROM_EMAIL).
- * Without an API key it falls back to logging the code to the server console
- * (dev mode) so the flow stays testable. Throws when Resend rejects the send.
+ * Sends the 6-digit login code through the configured SMTP app-password transport.
  */
 export async function sendOtpEmail(to: string, code: string): Promise<void> {
   const minutes = Math.max(1, Math.round(OTP_TTL_MS / 60_000));
-
-  if (!resendConfigured()) {
-    console.warn(`[zanta] RESEND_API_KEY not set — OTP for ${to}: ${code}`);
-    return;
-  }
 
   const html = `
 <!doctype html>
@@ -69,16 +58,31 @@ export async function sendOtpEmail(to: string, code: string): Promise<void> {
   </body>
 </html>`;
 
-  const from =
-    process.env.RESEND_FROM_EMAIL?.trim() || "ZANTA NIGHT <onboarding@resend.dev>";
-  const resend = new Resend(process.env.RESEND_API_KEY);
-  const { error } = await resend.emails.send({
+  if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
+    throw new Error("SMTP email transport is not configured");
+  }
+
+  const port = Number(process.env.SMTP_PORT || 587);
+  const transport = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port,
+    secure: port === 465,
+    tls: {
+      rejectUnauthorized:
+        process.env.NODE_ENV === "production" || process.env.SMTP_ALLOW_SELF_SIGNED !== "true",
+    },
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+  const from = process.env.MAIL_FROM?.trim() || `ZANTA NIGHT <${process.env.SMTP_USER}>`;
+  await transport.sendMail({
     from,
     to,
-    subject: `Your ZANTA NIGHT login code — ${code}`,
+    replyTo: process.env.SMTP_USER,
+    subject: "Your ZANTA NIGHT verification code",
     html,
+    text: `Your ZANTA NIGHT verification code is ${code}. It expires in ${minutes} minutes.`,
   });
-  if (error) {
-    throw new Error(error.message || "Resend rejected the message");
-  }
 }
