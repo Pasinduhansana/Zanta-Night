@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { BookingError, uploadSlip } from "@/lib/booking-service";
+import { BookingError, findBookingForEmail, uploadSlip } from "@/lib/booking-service";
+import { readSessionToken, resolveSession } from "@/lib/auth-service";
 
 const MAX_SIZE = 5 * 1024 * 1024;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -7,6 +8,14 @@ const ALLOWED_EXT = ["jpg", "jpeg", "png", "webp"];
 
 export async function POST(request: Request, ctx: { params: Promise<{ ref: string }> }) {
   const { ref } = await ctx.params;
+  const session = await resolveSession(readSessionToken(request));
+  if (!session) {
+    return NextResponse.json({ ok: false, code: "notFound", error: "Booking not found." }, { status: 404 });
+  }
+  const ownedBooking = await findBookingForEmail(ref, session.email);
+  if (!ownedBooking) {
+    return NextResponse.json({ ok: false, code: "notFound", error: "Booking not found." }, { status: 404 });
+  }
 
   let form: FormData;
   try {
@@ -51,7 +60,7 @@ export async function POST(request: Request, ctx: { params: Promise<{ ref: strin
       buffer,
       contentType: file.type,
       fileName: file.name || "payment-slip.jpg",
-    });
+    }, session.email);
     return NextResponse.json({ ok: true, booking });
   } catch (err) {
     if (err instanceof BookingError) {

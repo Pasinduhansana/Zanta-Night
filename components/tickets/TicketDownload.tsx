@@ -11,6 +11,7 @@ type Kind = "png" | "jpg" | "pdf";
 type Props = {
   booking: BookingPublic;
   statusLabel: string;
+  ticketId?: string;
   compact?: boolean;
 };
 
@@ -35,7 +36,7 @@ function canvasToBlob(canvas: HTMLCanvasElement, kind: "png" | "jpg"): Promise<B
   });
 }
 
-export default function TicketDownload({ booking, statusLabel, compact = false }: Props) {
+export default function TicketDownload({ booking, statusLabel, ticketId, compact = false }: Props) {
   const t = useT();
   const [busy, setBusy] = useState<Kind | null>(null);
   const [failed, setFailed] = useState(false);
@@ -45,7 +46,8 @@ export default function TicketDownload({ booking, statusLabel, compact = false }
     setBusy(kind);
     setFailed(false);
     try {
-      const canvas = await renderTicketCanvas(booking, statusLabel, t);
+      const canvas = await renderTicketCanvas(booking, statusLabel, t, ticketId);
+      const filenameBase = ticketId || booking.reference;
       if (kind === "pdf") {
         const { jsPDF } = await import("jspdf");
         const pageW = Math.round((canvas.width / TICKET_RENDER_SCALE) * 0.75);
@@ -57,10 +59,18 @@ export default function TicketDownload({ booking, statusLabel, compact = false }
           compress: true,
         });
         pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, pageW, pageH);
-        pdf.save(`ZANTA-NIGHT-${booking.reference}.pdf`);
+        pdf.save(`ZANTA-NIGHT-${filenameBase}.pdf`);
       } else {
-        saveBlob(await canvasToBlob(canvas, kind), `ZANTA-NIGHT-${booking.reference}.${kind}`);
+        saveBlob(await canvasToBlob(canvas, kind), `ZANTA-NIGHT-${filenameBase}.${kind}`);
       }
+      await fetch("/api/my/tickets/download", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...(ticketId ? { ticketId } : { bookingRef: booking.reference }),
+          format: kind,
+        }),
+      });
     } catch {
       setFailed(true);
     } finally {

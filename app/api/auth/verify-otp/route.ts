@@ -29,7 +29,7 @@ export async function POST(request: Request) {
       { status: 400 },
     );
   }
-  if (body.email.length > 160 || body.code.length > 12) {
+  if (body.email.length > 160 || !/^\d{4}$/.test(body.code)) {
     return NextResponse.json(
       { ok: false, code: "invalidEmail", error: "Invalid payload." },
       { status: 400 },

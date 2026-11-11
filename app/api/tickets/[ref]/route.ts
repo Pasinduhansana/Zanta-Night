@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
-import { findBooking } from "@/lib/booking-service";
+import { findBookingForEmail } from "@/lib/booking-service";
+import { readSessionToken, resolveSession } from "@/lib/auth-service";
 
 export async function GET(
-  _request: Request,
+  request: Request,
   ctx: { params: Promise<{ ref: string }> },
 ) {
   const { ref } = await ctx.params;
@@ -14,7 +15,11 @@ export async function GET(
   }
 
   try {
-    const booking = await findBooking(ref);
+    const session = await resolveSession(readSessionToken(request));
+    if (!session) {
+      return NextResponse.json({ ok: false, code: "notFound", error: "Booking not found" }, { status: 404 });
+    }
+    const booking = await findBookingForEmail(ref, session.email);
     if (!booking) {
       return NextResponse.json(
         { ok: false, code: "notFound", error: "Booking not found" },

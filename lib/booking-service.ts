@@ -260,9 +260,21 @@ export async function findBooking(reference: string): Promise<BookingPublic | nu
     } catch (err) {
       warnOnce(`Failed to read booking (${err instanceof Error ? err.message : "unknown"})`);
     }
+
   }
   const rec = memoryStore.get(ref);
   return rec ? toPublic(rec) : null;
+}
+
+export async function findBookingForEmail(
+  reference: string,
+  email: string,
+): Promise<BookingPublic | null> {
+  const booking = await findBooking(reference);
+  if (!booking || booking.email.trim().toLowerCase() !== email.trim().toLowerCase()) {
+    return null;
+  }
+  return booking;
 }
 
 export async function listBookings(status?: BookingStatus): Promise<BookingPublic[]> {
@@ -334,8 +346,15 @@ export async function listBookingsForEmail(email: string): Promise<BookingPublic
 export async function uploadSlip(
   reference: string,
   file: { buffer: Buffer; contentType: string; fileName: string },
+  ownerEmail?: string,
 ): Promise<BookingPublic> {
   const ref = reference.trim().toUpperCase();
+  if (ownerEmail) {
+    const ownerBooking = await findBookingForEmail(ref, ownerEmail);
+    if (!ownerBooking) {
+      throw new BookingError("Booking not found.", 404, "notFound");
+    }
+  }
 
   let processed = file.buffer;
   let contentType = file.contentType;

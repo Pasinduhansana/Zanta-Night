@@ -318,7 +318,7 @@ export default function BookingView() {
 
   const confirmOtp = async () => {
     const value = otpCode.replace(/\D/g, "");
-    if (value.length !== 6) return;
+    if (value.length !== 4) return;
     setOtpBusy(true);
     setOtpError(null);
     try {
@@ -553,17 +553,17 @@ export default function BookingView() {
                     autoComplete="one-time-code"
                     value={otpCode}
                     onChange={(e) => {
-                      setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6));
+                      setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 4));
                       setOtpError(null);
                     }}
                     placeholder={t.booking.verify.codePlaceholder}
-                    maxLength={6}
+                    maxLength={4}
                     className="w-40 border border-white/15 bg-abyss/60 px-4 py-3 text-center font-display text-xl tracking-[0.4em] text-bone outline-none transition-colors focus:border-acid"
                   />
                   <button
                     type="button"
                     onClick={() => void confirmOtp()}
-                    disabled={otpBusy || otpCode.length !== 6}
+                    disabled={otpBusy || otpCode.length !== 4}
                     className="btn-acid px-5 py-3 text-[0.68rem] disabled:opacity-60"
                   >
                     {otpBusy ? (

@@ -115,6 +115,12 @@ export default function Navbar() {
               <Ticket className="h-3.5 w-3.5" strokeWidth={2.5} />
               {t.nav.getTickets}
             </Link>
+            <Link
+              href="/login"
+              className="btn-ghost hidden border-acid/40 px-5 py-2.5 text-[0.68rem] sm:inline-flex"
+            >
+              {t.nav.myTickets}
+            </Link>
             <button
               type="button"
               onClick={() => setOpen((v) => !v)}
@@ -178,6 +184,13 @@ export default function Navbar() {
                 >
                   <Ticket className="h-4 w-4" strokeWidth={2.5} />
                   {t.nav.getTicketsFrom(EVENT.ticket.priceLabel)}
+                </Link>
+                <Link
+                  href="/login"
+                  onClick={close}
+                  className="btn-ghost w-full border-acid/40 px-6 py-4 text-xs"
+                >
+                  {t.nav.myTickets}
                 </Link>
                 <LangSwitch className="self-start" />
               </motion.div>

@@ -9,7 +9,8 @@ import {
   OTP_TTL_MS,
 } from "@/lib/models/OtpCode";
 
-export const SESSION_COOKIE = "zanta_session";
+export const SESSION_COOKIE =
+  process.env.NODE_ENV === "production" ? "__Host-zanta_session" : "zanta_session";
 
 /* --------------------------------------------------------------- hashing */
 
@@ -138,7 +139,7 @@ export async function requestOtp(
       }
     }
 
-    const code = String(randomInt(0, 1_000_000)).padStart(6, "0");
+    const code = String(randomInt(0, 10_000)).padStart(4, "0");
     await OtpCode.findOneAndUpdate(
       { email },
       {
@@ -229,8 +230,15 @@ export async function verifyOtp(rawEmail: string, rawCode: string): Promise<OtpV
       };
     }
 
-    // Consume the code — a verified OTP can never be replayed.
-    await OtpCode.deleteOne({ email, codeHash: doc.codeHash }).catch(() => undefined);
+    // Consume atomically so concurrent requests cannot reuse the same OTP.
+    const consumed = await OtpCode.findOneAndDelete({
+      _id: doc._id,
+      email,
+      codeHash: doc.codeHash,
+    });
+    if (!consumed) {
+      return { ok: false, code: "notFound", status: 404 };
+    }
     const token = await createSession(email);
     return { ok: true, email, token };
   } catch (err) {
@@ -259,6 +267,7 @@ export async function resolveSession(token: string | null): Promise<{ email: str
     const doc = await AuthSession.findOne({
       tokenHash: hashToken(token),
       expiresAt: { $gt: new Date() },
+      createdAt: { $gt: new Date(Date.now() - SESSION_TTL_MS) },
     })
       .select("email")
       .lean();
@@ -285,11 +294,12 @@ export async function revokeSession(token: string | null): Promise<void> {
 export function readSessionToken(request: Request): string | null {
   const header = request.headers.get("cookie");
   if (!header) return null;
-  const match = header.match(/(?:^|;\s*)zanta_session=([^;]+)/);
+  const match = header.match(new RegExp(`(?:^|;\\s*)${SESSION_COOKIE}=([^;]+)`));
   return match ? decodeURIComponent(match[1]) : null;
 }
 
 export function isHttpsRequest(request: Request): boolean {
+  if (process.env.NODE_ENV === "production") return true;
   const proto = request.headers.get("x-forwarded-proto");
   if (proto) return proto.split(",")[0].trim() === "https";
   try {

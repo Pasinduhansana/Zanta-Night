@@ -128,7 +128,7 @@ export default function LoginView() {
   const onSubmitCode = async (event: React.FormEvent) => {
     event.preventDefault();
     const value = code.replace(/\D/g, "");
-    if (value.length !== 6) {
+    if (value.length !== 4) {
       setError(t.auth.login.errors.invalid(attemptsLeft ?? 1));
       return;
     }
@@ -229,11 +229,11 @@ export default function LoginView() {
               autoComplete="one-time-code"
               value={code}
               onChange={(e) => {
-                setCode(e.target.value.replace(/\D/g, "").slice(0, 6));
+                setCode(e.target.value.replace(/\D/g, "").slice(0, 4));
                 setError(null);
               }}
               placeholder={t.auth.login.codePlaceholder}
-              maxLength={6}
+              maxLength={4}
               className={`${inputClass} text-center font-display text-3xl tracking-[0.5em]`}
             />
           </label>

@@ -110,6 +110,7 @@ export async function sendTicketEmail(input: TicketMailInput): Promise<boolean> 
         <div style="font:400 11px/1.8 Arial,sans-serif;color:#c8d2ce">
           Show one QR code per person at the entrance — each ticket can be scanned only once.
           Keep this email handy; screenshots of the QR codes are fine.
+          If you didn't receive it in your inbox, please check your spam folder.
         </div>
       </td></tr>
     </table>
@@ -141,6 +142,7 @@ export async function sendTicketEmail(input: TicketMailInput): Promise<boolean> 
       `Your ZANTA NIGHT tickets are confirmed, ${input.name}.`,
       `Booking: ${input.reference}`,
       `Event: ${EVENT.date.shortLabel} · ${EVENT.time.label} · ${EVENT.venue.statusLabel}`,
+      "If you didn't receive this email in your inbox, please check your spam folder.",
       "",
       ...input.tickets.map(
         (ticket) => `Ticket ${ticket.seatIndex}: ${ticket.ticketId} (show the QR code in this email at entry)`,

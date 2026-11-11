@@ -5,6 +5,11 @@ export type TicketScanRecord = {
   method: string;
 };
 
+export type TicketDownloadRecord = {
+  at: Date;
+  format: "png" | "jpg" | "pdf";
+};
+
 export type TicketAttrs = {
   ticketId: string;
   bookingRef: string;
@@ -15,6 +20,8 @@ export type TicketAttrs = {
   issuedAt: Date;
   usedAt?: Date;
   scans: TicketScanRecord[];
+  downloadCount: number;
+  downloadHistory: TicketDownloadRecord[];
 };
 
 const TicketSchema = new Schema<TicketAttrs>(
@@ -33,6 +40,13 @@ const TicketSchema = new Schema<TicketAttrs>(
     issuedAt: { type: Date, required: true },
     usedAt: { type: Date },
     scans: [{ at: { type: Date, required: true }, method: { type: String, required: true } }],
+    downloadCount: { type: Number, required: true, default: 0, min: 0 },
+    downloadHistory: [
+      {
+        at: { type: Date, required: true },
+        format: { type: String, enum: ["png", "jpg", "pdf"], required: true },
+      },
+    ],
   },
   { timestamps: true },
 );

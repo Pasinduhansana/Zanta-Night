@@ -87,6 +87,8 @@ export type MyTicket = {
   status: string;
   issuedAt: string;
   usedAt: string | null;
+  downloadCount: number;
+  downloadHistory: { at: string; format: "png" | "jpg" | "pdf" }[];
 };
 
 /** Tickets belonging to one guest email — the My Tickets dashboard source. */
@@ -107,10 +109,63 @@ export async function listTicketsForEmail(email: string): Promise<MyTicket[] | n
       status: d.status,
       issuedAt: new Date(d.issuedAt).toISOString(),
       usedAt: d.usedAt ? new Date(d.usedAt).toISOString() : null,
+      downloadCount: d.downloadCount ?? 0,
+      downloadHistory: (d.downloadHistory ?? []).map((entry) => ({
+        at: new Date(entry.at).toISOString(),
+        format: entry.format,
+      })),
     }));
   } catch (err) {
     console.error("[zanta] ticket list failed:", err);
     return null;
+  }
+
+}
+
+export async function recordTicketDownload(
+  email: string,
+  rawTicketId: string,
+  format: "png" | "jpg" | "pdf",
+): Promise<boolean> {
+  const ticketId = normalizeTicketId(rawTicketId);
+  if (!TICKET_ID_RE.test(ticketId)) return false;
+  const conn = await connectDB();
+  if (!conn) return false;
+  try {
+    const updated = await Ticket.findOneAndUpdate(
+      { ticketId, guestEmail: email.trim().toLowerCase() },
+      {
+        $inc: { downloadCount: 1 },
+        $push: { downloadHistory: { at: new Date(), format } },
+      },
+      { new: true },
+    );
+    return Boolean(updated);
+  } catch (err) {
+    console.error("[zanta] ticket download tracking failed:", err);
+    return false;
+  }
+}
+
+export async function recordBookingDownload(
+  email: string,
+  bookingRef: string,
+  format: "png" | "jpg" | "pdf",
+): Promise<boolean> {
+  const conn = await connectDB();
+  if (!conn) return false;
+  try {
+    const result = await Ticket.updateMany(
+      { bookingRef: bookingRef.trim().toUpperCase(), guestEmail: email.trim().toLowerCase() },
+      {
+        $inc: { downloadCount: 1 },
+        $push: { downloadHistory: { at: new Date(), format } },
+      },
+    );
+    return result.modifiedCount > 0;
+  } catch (err) {
+    console.error("[zanta] booking download tracking failed:", err);
+    return false;
   }
 }
 
@@ -199,6 +254,8 @@ export async function issueTickets(target: IssueTarget): Promise<boolean> {
     status: "unused",
     issuedAt: now,
     scans: [],
+    downloadCount: 0,
+    downloadHistory: [],
   }));
 
   try {

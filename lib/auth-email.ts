@@ -10,7 +10,7 @@ function escapeHtml(value: string): string {
 }
 
 /**
- * Sends the 6-digit login code through the configured SMTP app-password transport.
+ * Sends the 4-digit login code through the configured SMTP app-password transport.
  */
 export async function sendOtpEmail(to: string, code: string): Promise<void> {
   const minutes = Math.max(1, Math.round(OTP_TTL_MS / 60_000));
@@ -52,6 +52,7 @@ export async function sendOtpEmail(to: string, code: string): Promise<void> {
           This code can be used once and expires in ${minutes} minutes.
           If you didn't request it you can safely ignore this email — no one can
           access your bookings without it.
+          If you didn't receive it in your inbox, please check your spam folder.
         </div>
       </td></tr>
     </table>
@@ -83,6 +84,6 @@ export async function sendOtpEmail(to: string, code: string): Promise<void> {
     replyTo: process.env.SMTP_USER,
     subject: "Your ZANTA NIGHT verification code",
     html,
-    text: `Your ZANTA NIGHT verification code is ${code}. It expires in ${minutes} minutes.`,
+    text: `Your ZANTA NIGHT verification code is ${code}. It expires in ${minutes} minutes. If you didn't receive it in your inbox, please check your spam folder.`,
   });
 }

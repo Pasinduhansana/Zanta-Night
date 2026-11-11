@@ -116,6 +116,7 @@ export async function renderTicketCanvas(
   booking: BookingPublic,
   statusLabel: string,
   t: Dict,
+  ticketId?: string,
 ): Promise<HTMLCanvasElement> {
   await document.fonts.ready;
 
@@ -132,7 +133,7 @@ export async function renderTicketCanvas(
   ctx.__display = fam.display;
   ctx.__body = fam.body;
 
-  const qrUrl = await QRCode.toDataURL(booking.reference, {
+  const qrUrl = await QRCode.toDataURL(ticketId ?? booking.reference, {
     width: 512,
     margin: 1,
     color: { dark: "#001a14ff", light: "#ffffffff" },

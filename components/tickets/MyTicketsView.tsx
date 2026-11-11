@@ -24,6 +24,8 @@ type MyTicket = {
   status: string;
   issuedAt: string;
   usedAt: string | null;
+  downloadCount: number;
+  downloadHistory: { at: string; format: "png" | "jpg" | "pdf" }[];
 };
 
 type Payload = {
@@ -285,6 +287,26 @@ export default function MyTicketsView() {
                           </span>
                         )}
                       </div>
+                      <p className="mt-3 text-[0.58rem] uppercase tracking-[0.16em] text-mist/70">
+                        Downloads: {ticket.downloadCount}
+                      </p>
+                      {ticket.downloadHistory.length > 0 && (
+                        <div className="mt-2 space-y-1 border-t border-white/10 pt-2">
+                          {[...ticket.downloadHistory].reverse().map((download, index) => (
+                            <p key={`${download.at}-${index}`} className="text-[0.55rem] text-mist/60">
+                              {download.format.toUpperCase()} · {formatDateTime(download.at)}
+                            </p>
+                          ))}
+                        </div>
+                      )}
+                      {booking.status === "confirmed" || booking.status === "checked_in" ? (
+                        <TicketDownload
+                          booking={booking}
+                          statusLabel={ui.label}
+                          ticketId={ticket.ticketId}
+                          compact
+                        />
+                      ) : null}
                     </div>
                   ))}
                 </div>
@@ -300,9 +322,6 @@ export default function MyTicketsView() {
                   <ExternalLink className="h-3.5 w-3.5" />
                   {t.auth.tickets.openBooking}
                 </Link>
-                {(booking.status === "confirmed" || booking.status === "checked_in") && (
-                  <TicketDownload booking={booking} statusLabel={ui.label} compact />
-                )}
               </div>
             </div>
           );
