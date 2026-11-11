@@ -66,7 +66,7 @@ export default function Lineup() {
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_45%_at_10%_20%,rgba(0,143,85,.18),transparent_70%)]"
       />
 
-      <div className="relative mx-auto w-full max-w-[1400px] px-5 sm:px-8">
+      <div className="relative w-full px-8 sm:px-14 lg:px-20">
         <div ref={headRef}>
           <div className="flex items-center justify-between gap-6 border-b border-white/10 pb-5">
             <span className="kicker text-acid">{t.lineup.section}</span>
@@ -152,7 +152,7 @@ export default function Lineup() {
         </div>
       </div>
 
-      <div className="relative mx-auto mt-12 w-full max-w-[1400px] px-5 text-center sm:px-8">
+      <div className="relative mt-12 w-full px-8 text-center sm:px-14 lg:px-20">
         <Link href="/booking?qty=1" className="btn-acid px-7 py-4 text-[0.72rem]">
           {t.lineup.beThere(EVENT.ticket.priceLabel)}
         </Link>

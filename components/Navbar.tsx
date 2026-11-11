@@ -84,7 +84,7 @@ export default function Navbar() {
             : "bg-transparent py-5 border-b border-transparent",
         ].join(" ")}
       >
-        <nav className="mx-auto flex w-full max-w-[1400px] items-center justify-between px-5 sm:px-8">
+        <nav className="flex w-full items-center justify-between px-8 sm:px-14 lg:px-20">
           <Link href="/#home" aria-label={`${EVENT.name} home`} className="group flex items-baseline gap-2">
             <span className="font-display text-2xl sm:text-[1.7rem] leading-none tracking-tight text-bone transition-colors group-hover:text-acid">
               ZANTA

@@ -401,7 +401,7 @@ export default function BookingView() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-[1400px] px-5 pb-24 pt-32 sm:px-8 sm:pt-36">
+    <div className="w-full px-8 pb-24 pt-32 sm:px-14 lg:px-20 sm:pt-36">
       <Link
         href="/#tickets"
         className="inline-flex items-center gap-2 text-[0.65rem] font-semibold uppercase tracking-[0.26em] text-mist transition-colors hover:text-acid"

@@ -70,7 +70,7 @@ export default function TicketsSection() {
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(75%_60%_at_50%_100%,rgba(0,143,85,.28),transparent_72%)]"
       />
 
-      <div className="relative mx-auto w-full max-w-[1400px] px-5 sm:px-8">
+      <div className="relative w-full px-8 sm:px-14 lg:px-20">
         <div className="flex items-center justify-between gap-6 border-b border-white/10 pb-5">
           <span className="kicker text-acid">{t.tickets.section}</span>
           <span className="kicker text-mist">{t.event.category}</span>

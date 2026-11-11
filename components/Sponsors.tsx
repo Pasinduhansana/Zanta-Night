@@ -10,7 +10,7 @@ export default function Sponsors() {
   const t = useT();
   return (
     <section id="sponsors" className="relative border-y border-white/10 bg-abyss py-20 sm:py-28">
-      <div className="mx-auto w-full max-w-[1400px] px-5 sm:px-8">
+      <div className="w-full px-8 sm:px-14 lg:px-20">
         <div className="flex items-center justify-between gap-6 border-b border-white/10 pb-5">
           <span className="kicker text-acid">{t.sponsors.section}</span>
           <span className="kicker text-mist">{t.sponsors.sub}</span>

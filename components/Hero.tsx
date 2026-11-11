@@ -39,6 +39,7 @@ export default function Hero() {
   const t = useT();
   const rootRef = useRef<HTMLElement | null>(null);
   const bgRef = useRef<HTMLDivElement | null>(null);
+  const djRef = useRef<HTMLDivElement | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -47,10 +48,28 @@ export default function Hero() {
     const ctx = gsap.context(() => {
       if (bgRef.current) {
         gsap.to(bgRef.current, {
-          yPercent: 16,
-          scale: 1.12,
+          yPercent: 12,
+          scale: 1.08,
+          opacity: 0.18,
           ease: "none",
           scrollTrigger: { trigger: root, start: "top top", end: "bottom top", scrub: true },
+        });
+      }
+      if (djRef.current) {
+        gsap.from(djRef.current, {
+          y: 120,
+          rotateX: 16,
+          opacity: 0,
+          duration: 1.5,
+          delay: 0.25,
+          ease: "power4.out",
+        });
+        gsap.to(djRef.current, {
+          yPercent: 18,
+          rotateZ: -2,
+          opacity: 0,
+          ease: "none",
+          scrollTrigger: { trigger: root, start: "top top", end: "70% top", scrub: true },
         });
       }
       if (contentRef.current) {
@@ -114,6 +133,25 @@ export default function Hero() {
         ))}
 
         <div className="vignette absolute inset-0" />
+
+        <div
+          ref={djRef}
+          aria-hidden
+          className="pointer-events-none absolute bottom-[-8%] left-1/2 z-[1] h-[34vh] w-[min(94vw,1100px)] -translate-x-1/2 [perspective:1200px]"
+        >
+          <div className="absolute inset-x-[8%] bottom-0 h-[44%] rounded-[2rem] border border-acid/30 bg-[linear-gradient(145deg,rgba(8,53,40,.95),rgba(0,12,10,.98))] shadow-[0_-20px_100px_rgba(0,143,85,.28)] [transform:rotateX(58deg)]" />
+          <div className="absolute inset-x-[15%] bottom-[21%] grid grid-cols-12 gap-1.5 rounded-xl border border-white/10 bg-abyss/90 p-3 [transform:rotateX(58deg)]">
+            {Array.from({ length: 48 }, (_, i) => (
+              <span
+                key={i}
+                className={`h-3 rounded-[2px] border border-white/10 ${i % 9 === 0 ? "bg-acid/70" : i % 5 === 0 ? "bg-jade/80" : "bg-white/10"}`}
+              />
+            ))}
+          </div>
+          <div className="absolute bottom-[38%] left-[28%] h-16 w-16 rounded-full border-4 border-acid/70 bg-jade/40 shadow-[0_0_30px_rgba(182,255,0,.4)] [transform:rotateX(58deg)]" />
+          <div className="absolute bottom-[38%] right-[28%] h-16 w-16 rounded-full border-4 border-acid/70 bg-jade/40 shadow-[0_0_30px_rgba(182,255,0,.4)] [transform:rotateX(58deg)]" />
+          <div className="absolute bottom-[11%] left-[4%] right-[4%] h-px bg-acid/50 shadow-[0_0_24px_rgba(182,255,0,.7)]" />
+        </div>
       </div>
 
       <Motes count={40} />
@@ -121,7 +159,7 @@ export default function Hero() {
       {/* ----------------------------------------------------------- content */}
       <div
         ref={contentRef}
-        className="relative z-10 mx-auto flex min-h-[100svh] w-full max-w-[1400px] flex-col justify-between px-5 pb-10 pt-32 sm:px-8 sm:pt-36"
+        className="relative z-10 flex min-h-[100svh] w-full flex-col justify-between px-8 pb-10 pt-32 sm:px-14 lg:px-20 sm:pt-36"
       >
         {/* top row */}
         <div className="flex flex-wrap items-center justify-between gap-4">

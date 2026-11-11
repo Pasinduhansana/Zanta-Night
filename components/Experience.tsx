@@ -94,7 +94,7 @@ export default function Experience() {
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(80%_50%_at_50%_0%,rgba(0,143,85,.2),transparent_75%)]"
       />
 
-      <div className="relative mx-auto w-full max-w-[1400px] px-5 sm:px-8">
+      <div className="relative w-full px-8 sm:px-14 lg:px-20">
         <div className="flex items-center justify-between gap-6 border-b border-white/10 pb-5">
           <span className="kicker text-acid">{t.experience.section}</span>
           <span className="kicker text-mist hidden sm:block">{t.experience.hint}</span>
@@ -169,7 +169,7 @@ export default function Experience() {
           </div>
         </div>
 
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 px-5 pb-5 sm:px-8">
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 px-8 pb-5 sm:px-14 lg:px-20">
           <div className="mb-2.5 flex items-center justify-between">
             <span
               ref={counterRef}

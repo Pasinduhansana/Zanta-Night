@@ -12,7 +12,7 @@ export default function BookingPage() {
   return (
     <Suspense
       fallback={
-        <div className="mx-auto w-full max-w-[1400px] px-5 pt-40 pb-24 sm:px-8">
+        <div className="w-full px-8 pt-40 pb-24 sm:px-14 lg:px-20">
           <div className="skeleton h-96 w-full" />
         </div>
       }

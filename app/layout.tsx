@@ -52,7 +52,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${anton.variable} ${grotesk.variable} ${sinhala.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-abyss text-bone">
+      <body className="min-h-full flex flex-col  bg-abyss text-bone">
         <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>

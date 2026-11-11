@@ -8,7 +8,7 @@ export default function Footer() {
   const t = useT();
   return (
     <footer className="relative overflow-hidden border-t border-white/10 bg-abyss">
-      <div className="mx-auto w-full max-w-[1400px] px-5 pt-16 sm:px-8 sm:pt-20">
+      <div className="w-full px-8 pt-16 sm:px-14 lg:px-20 sm:pt-20">
         <div className="grid gap-10 pb-14 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <p className="font-display text-3xl leading-none">

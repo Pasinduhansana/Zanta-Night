@@ -239,7 +239,7 @@ export default function AdminPanel() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-[1400px] px-5 pb-24 pt-32 sm:px-8 sm:pt-36">
+    <div className="w-full px-8 pb-24 pt-32 sm:px-14 lg:px-20 sm:pt-36">
       <div className="flex flex-wrap items-end justify-between gap-4 border-b border-white/10 pb-6">
         <div>
           <span className="kicker text-acid">ZANTA EVENTS</span>
