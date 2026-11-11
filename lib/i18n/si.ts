@@ -15,31 +15,31 @@ export const si: Dict = {
   },
 
   event: {
-    subtitle: "ෆුඩ් ෆෙස්ටිවල් සහ ඩීජී පාර්ටි",
-    tagline: "ෆුඩ් ෆෙස්ටිවල් සහ ඩීජී පාර්ටි",
-    category: "සාමාන්‍ය ඇතුළුවීම",
-    dateShort: "දෙසැම්බර් 25",
-    dec25Short: "දෙසැ. 25",
-    yearConfirmed: "තහවුරුයි",
-    yearPending: "තවම නිවේදනය නැත",
-    presents: (organizer: string) => `${organizer} විසින් ඉදිරිපත් කරයි`,
+    subtitle: "Food Festival & DJ Party",
+    tagline: "FOOD FESTIVAL & DJ PARTY",
+    category: "General Entry",
+    dateShort: "DECEMBER 25",
+    dec25Short: "Dec 25",
+    yearConfirmed: "CONFIRMED",
+    yearPending: "TO BE ANNOUNCED",
+    presents: (organizer: string) => `${organizer} presents`,
   },
 
   hero: {
-    from: "සිට",
+    from: "From",
     cta: (price: string) => `ඔබේ ටිකට් පත ගන්න — ${price}`,
     explore: "අත්දැකීම නරඹන්න",
-    scroll: "පහළට",
+    scroll: "Scroll",
   },
 
   countdown: {
-    saveTheDate: "දිනය සුරකින්න",
+    saveTheDate: "Save the date",
     year: (status: string) => `වර්ෂය ${status}`,
     date: "දිනය",
     doorsOpen: "දොරටු විවෘත වන වේලාව",
     venue: "ස්ථානය",
-    noCountdown: "වර්ෂය තහවුරු වූවිට ඉතිරි කාලය ගණනය වේ",
-    live: "රාත්‍රිය දැන් සජීවීයි",
+    noCountdown: "Countdown activates once the year is confirmed",
+    live: "The night is live",
     label: "ඉතිරි කාලය",
     days: "දින",
     hours: "පැය",
@@ -48,86 +48,86 @@ export const si: Dict = {
   },
 
   intro: {
-    section: "01 — එම රාත්‍රිය",
+    section: "01 — The night",
     statement:
-      "ආහාර උත්සවයක් ඩීජී පාර්ටියක් බවට පත් වන රාත්‍රියකි. එකම පිරිසක්. එකම රාත්‍රියක්. දෙසැම්බර් 25.",
+      "A FOOD FESTIVAL THAT TURNS INTO A DJ PARTY. ONE CROWD. ONE NIGHT. DECEMBER 25.",
     para1: (name: string) =>
-      `${name} සවස 3:00ට දොරටු විවෘත කර මධ්‍යම රාත්‍රී 12 දක්වා අඛණ්ඩව පවතී — සියලු උණුසුම් වූ ආහාර කඩ, වාර්මිකයන්ගෙන් අවසන් තට්ටුව දක්වා වාදනය කරන DJ, සහ අඳුරු වූ පසුවත් වර්ධනය වන නර්තන බිමක්.`,
+      `${name} opens its gates at 3:00 PM and runs straight through to midnight — food stalls firing on all burners, DJs rolling from warm-up to closing, and a dance floor that keeps swelling after dark.`,
     para2: (names: string, date: string) =>
-      `${names} — නම් තුනක්, එකම රාත්‍රියේ පිටපත් තුනක්. කුස පිරී එන්න, ඔබේ පිරිස රැගෙන එන්න, ${date} දින අවසන් ගීතය නිහඬ වන තුරු රැඳී සිටින්න.`,
+      `${names} — three names, three chapters of the same night. Come hungry, bring your crew, and stay until the last track fades over ${date}.`,
     chipFood: "ආහාර උත්සවය",
     chipDj: "DJ පාර්ටි",
     chipNight: "රාත්‍රී වාතාවරණය",
     chipEntry: (price: string) => `${price} ඇතුළුවීම`,
     secure: "ඔබේ ඇතුළුවීම වෙන් කරගන්න",
-    doors: "දොරටු — සවස 3:00",
-    until: "මධ්‍යම රාත්‍රී 12 දක්වා",
-    streetFood: "වීදි ආහාර · සජීවී වාදන",
+    doors: "Doors 3:00 PM",
+    until: "Until 12:00 AM",
+    streetFood: "Street food · Live sets",
   },
 
   lineup: {
-    section: "02 — ප්‍රසංග පෝරමය",
-    count: "සංගීතඥයින් සිව්දෙනෙක්",
-    headingTop: "නම් හතරයි.",
-    headingBottom: "එක් රාත්‍රියක්.",
+    section: "02 — Lineup",
+    count: "Four performers",
+    headingTop: "FOUR NAMES.",
+    headingBottom: "ONE NIGHT.",
     intro: (names: string) =>
-      `${names} — පළමු වාර්මික පැයේ සිට අවසන් තට්ටුව දක්වා එකා පසු එකා ලෙස ඩීජී තට්ටුව අතට පත් වේ.`,
+      `The booth belongs to ${names} — one after another, from the first warm-up hour to the final drop.`,
     performer: "සංගීතඥයා",
     beThere: (price: string) => `එහි සිටින්න — ${price}`,
     lines: {
-      "mr-percussion": "ඩීජී තට්ටුවේ රිද්මය",
-      yakee: "අත් උඩට",
-      "project-m": "සංඥාවෙන් ඔබ්බට",
-      keetone: "අඳුරෙන් පසු යතුරු",
+      "mr-percussion": "Rhythm on the decks",
+      yakee: "Hands in the air",
+      "project-m": "Beyond the signal",
+      keetone: "Keys after dark",
     } as Record<string, string>,
   },
 
   experience: {
-    section: "03 — අත්දැකීම",
+    section: "03 — Experience",
     hint: "රාත්‍රිය හරහා ගමන් කිරීමට අනුචලනය කරන්න",
-    headingTop: "එම රාත්‍රියේ",
-    headingBottom: "ස්ථර හතරක්",
+    headingTop: "FOUR LAYERS",
+    headingBottom: "OF THE SAME NIGHT",
     intro:
-      "සංගීතය, ආහාර, ආලෝකය සහ මිනිසුන් එකිනෙකා මත එකතු වී මුළු ශාලාවම එකක් ලෙස හැසිරෙන තුරු.",
+      "Music, food, light and people stacking on top of each other until the whole room moves as one.",
     panels: [
       {
-        title: "සංගීතය",
+        title: "The Music",
         copy: (_time: string, _date: string) =>
-          "Mr. Percussion, YAKEE, Project M සහ KEETONE ඩීජී තට්ටුව පිටිපස්සෙන් පිටිපස්සට ගනී — අවසන් වාදනය දක්වා නැඟෙන වාර්මික උණුසුමක්.",
-        chip: "සජීවී DJ වාදන",
-        alt: "කොළ ලේසර් යට නර්තන බිම",
+          "Mr. Percussion, YAKEE, Project M and KEETONE run the decks back to back — warm-up energy that keeps climbing until the closing set.",
+        chip: "Live DJ sets",
+        alt: "Dance floor under green lasers",
       },
       {
-        title: "ආහාර",
+        title: "The Food",
         copy: (_time: string, _date: string) =>
-          "සංගීතයත් සමඟ පවතින සම්පූර්ණ ආහාර උත්සවයක් — දහවල් දොරටු විවෘත වූ මොහොතේ සිට පිඟන්, ග්‍රිල් සහ වීදි ආහාර මුදාහැරීම.",
-        chip: "ආහාර උත්සවය",
-        alt: "රාත්‍රී ආහාර උත්සව ග්‍රිල්",
+          "A full food festival riding alongside the music — plates, grills and street-food energy from the afternoon doors onward.",
+        chip: "Food festival",
+        alt: "Night food festival grills",
       },
       {
-        title: "ආලෝක",
+        title: "The Lights",
         copy: (_time: string, _date: string) =>
-          "කොළ ලේසර්, ගලා යන මීදුම සහ අඳුර විදින ස්ට්‍රෝබ් — දෙසැම්බර් 25 දිනය අන් අයට කිසිවක් නොවන පරිදි මතු කරන දෘශ්‍ය අත්සන.",
-        chip: "ලේසර් ප්‍රදර්ශනය",
-        alt: "මීදුම තුළ කොළ ලේසර් කිරණ",
+          "Green lasers, rolling fog and hard strobes slicing the dark — the visual signature that makes December 25 look like nothing else.",
+        chip: "Laser show",
+        alt: "Green laser beams in fog",
       },
       {
-        title: "පිරිස",
+        title: "The Crowd",
         copy: (time: string, date: string) =>
-          `${date} දින ${time}. එකම පිරිසක්, එකම කාමරයක්, හිස් බිමක් නැත — පළමු පැයේ සිට අවසන් ගීතය දක්වා.`,
-        chip: "දොරටු සවස 3:00",
-        alt: "මීදුම තුළ අත් උසුලා සිටින පිරිස",
+          `${time} on ${date}. One crowd, one room, no empty floor — from the first hour to the last track.`,
+        chip: "Doors 3:00 PM",
+        alt: "Crowd with hands raised in fog",
       },
     ],
     endOfStrip: "පටිය අවසන්",
     keepScrolling: "දිගටම අනුචලනය කරන්න",
   },
   sponsors: {
-    section: "04 — හවුල්කරුවන්",
+    section: "04 — Partners",
     sub: "සංවිධායක සහ ප්‍රධාන අනුග්‍රාහකයන්",
     organizedBy: "සංවිධානය කරනු ලබන්නේ",
     blurb:
-      "රාත්‍රියේ ඡායාරූප, ගිනිකෙළි සහ ප්‍රවාහන කොටස් ආවරණය කරන ප්‍රධාන හවුල්කරුවන් තිදෙනෙකුගේ සහාය ඇත.",
+      "Backed by three main partners covering the photography, fireworks and transport side of the night.",
     roles: {
       Photography: "ඡායාරූප",
       Fireworks: "ගිනිකෙළි",
@@ -136,22 +136,21 @@ export const si: Dict = {
   },
 
   tickets: {
-    section: "05 — ටිකට්",
-    generalEntry: "සාමාන්‍ය ඇතුළුවීම",
+    section: "05 — Tickets",
+    generalEntry: "General entry",
     priceNote: (name: string, subtitle: string, date: string, time: string) =>
-      `එකම මිල, එකම පසුකිරීමක්. ${name} — ${subtitle}, ${date} දින ${time}.`,
+      `One price, one pass. ${name} — ${subtitle} on ${date}, ${time}.`,
     gateNote: (gate: string, date: string) =>
-      `කලින් ගෙවීමේ මිල — ${date} දින දොරටුවේදී ${gate}.`,
+      `Advance price — ${gate} at the gate on ${date}.`,
     details: { date: "දිනය", time: "වේලාව", venue: "ස්ථානය", entry: "ඇතුළුවීම" },
     quantity: "ප්‍රමාණය",
     maxPerBooking: (max: number) => `එක් වරකට උපරිම ${max}`,
     total: "මුළු මුදල",
     bulletAccess: (category: string) =>
-      `${category} — ආහාර උත්සවය සහ DJ පාර්ටියට ප්‍රවේශය`,
-    bulletRef: "වෙන් කිරීමේ අංකය ක්ෂණිකව ලැබේ",
-    bulletCountdown: (date: string, year: string) =>
-      `ඉතිරි කාලය සජීවීයි — ${date} ${year}`,
-    bulletYear: "ස්ථානය සමඟම උත්සව වර්ෂයත් නිවේදනය වේ",
+      `${category} — access to the food festival & DJ party`,
+    bulletRef: "Booking reference issued instantly",
+    bulletCountdown: (date: string, year: string) => `Countdown live — ${date} ${year}`,
+    bulletYear: "Event year announced together with the venue",
     continue: (total: string) => `ඉදිරියට යන්න — ${total}`,
     payNote:
       "වෙන් කිරීමෙන් පසු මාරු කිරීමෙන් ගෙවන්න — ඔබේ ටිකට් පත් පිටුවේ රිසිට් පත උඩුගත කරන්න",
@@ -165,9 +164,9 @@ export const si: Dict = {
     lineup: "ප්‍රසංග පෝරමය",
     mainSponsors: "ප්‍රධාන අනුග්‍රාහකයන්",
     blurb: (subtitle: string, date: string, time: string, organizer: string) =>
-      `${subtitle} — ${date}, ${time}. ${organizer} විසින් ඉදිරිපත් කරයි.`,
+      `${subtitle} — ${date}, ${time}. Presented by ${organizer}.`,
     bookTickets: "ටිකට් වෙන් කරන්න",
-    venueYear: (venue: string, status: string) => `${venue} · වර්ෂය ${status}`,
+    venueYear: (venue: string, status: string) => `${venue} · Year ${status}`,
   },
   booking: {
     back: "ටිකට් වලට ආපසු",
@@ -278,8 +277,8 @@ export const si: Dict = {
       server: "මෙම වෙන් කිරීම පූරණය කළ නොහැක.",
     },
     created: "වෙන් කිරීම සිදු විය",
-    headingTop: "ඔබේ",
-    headingBottom: "ටිකට් පත",
+    headingTop: "YOUR",
+    headingBottom: "TICKET",
     refresh: "තත්ත්වය යාවත්කාලීන කරන්න",
     refIntro: "වෙන් කිරීමේ අංකය",
     refOutro: (date: string) => `— ${date} සඳහා එය ආරක්ෂා කර තබා ගන්න.`,
@@ -355,14 +354,14 @@ export const si: Dict = {
   },
 
   ticket: {
-    lockedKicker: "ටිකට් පත අගුළුදමා ඇත",
-    lockedTitle: "ගෙවීම් ස්ලිපය උඩුගත කරන්න",
+    lockedKicker: "TICKET LOCKED",
+    lockedTitle: "UPLOAD YOUR SLIP",
     lockedBody:
-      "ගෙවීම් ස්ලිපය උඩුගත කළ සැණින් ඔබේ ටිකට් පත විවෘත වේ — ගෙවීම අනුමත වූ පසු සම්පූර්ණ ටිකට් පත ලැබේ.",
-    partialKicker: "අනුමැතිය බලාපොරොත්තුවෙන්",
+      "Your ticket tears open as soon as your payment slip is uploaded — the full ticket unlocks once the payment is approved.",
+    partialKicker: "AWAITING APPROVAL",
     partialNote:
-      "ගෙවීම අනුමත වනතෙක් ඇතුළුවන කොටස අගුළු දමා ඇත — මෙම පිටුව ස්වයංක්‍රීයව යාවත්කාලීන වේ.",
-    approvedKicker: "ගෙවීම අනුමතයි",
+      "The entry stub stays sealed until your payment is approved — this page updates automatically.",
+    approvedKicker: "PAYMENT APPROVED",
     download: {
       title: "ටිකට් පත බාගන්න",
       hint: "ඔබේ දුරකථනයේ පිටපතක් තබා ගන්න — QR කේතය ඇතුළතදී ස්කෑන් කරනු ලැබේ.",
