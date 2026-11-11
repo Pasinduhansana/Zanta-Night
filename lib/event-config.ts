@@ -3,6 +3,7 @@ export type Performer = {
   slug: string;
   index: string;
   image: string;
+  backgroundImage: string;
   line: string;
 };
 
@@ -82,10 +83,10 @@ export const EVENT = {
   },
 
   performers: [
-    { name: "Mr. Percussion", slug: "mr-percussion", index: "01", image: "/artists/furcussion.png", line: "Rhythm on the decks" },
-    { name: "YAKEE", slug: "yakee", index: "02", image: "/artists/Yakee.png", line: "Hands in the air" },
-    { name: "Project M", slug: "project-m", index: "03", image: "/artists/Project M.png", line: "Beyond the signal" },
-    { name: "KEETONE", slug: "keetone", index: "04", image: "/artists/keetone.png", line: "Keys after dark" },
+    { name: "YAKEE", slug: "yakee", index: "01", image: "/artists/Yakee.png", backgroundImage: "/images/artist-yakee.svg", line: "Hands in the air" },
+    { name: "Mr. Percussion", slug: "mr-percussion", index: "02", image: "/artists/furcussion.png", backgroundImage: "/images/artist-percussion.svg", line: "Rhythm on the decks" },
+    { name: "Project M", slug: "project-m", index: "03", image: "/artists/Project M.png", backgroundImage: "/images/artist-project-m.svg", line: "Beyond the signal" },
+    { name: "KEETONE", slug: "keetone", index: "04", image: "/artists/keetone.png", backgroundImage: "/images/artist-keetone.svg", line: "Keys after dark" },
   ] satisfies Performer[],
 
   sponsors: [
